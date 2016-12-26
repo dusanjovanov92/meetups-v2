@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Meetups</string>
+    <string name="sign_in_activity_1">Create account</string>
+    <string name="app_name_lowercase">meetups</string>
+    <string name="welcome">Welcome!</string>
+    <string name="sign_in_activity_2">Sign in with Google</string>
+    <string name="sign_in_activity_3">Sign in with a Meetups account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in_activity_4">Sign in</string>
+    <string name="error">Error</string>
+    <string name="google_play_error">This device is not compatible with Google Play Services which are required to run this app.</string>
+    <string name="sign_in_activity_5">Email and password fields are empty</string>
+    <string name="sign_in_activity_6">The email address you have entered is invalid</string>
+</resources>

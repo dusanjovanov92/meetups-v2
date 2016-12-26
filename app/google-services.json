@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "581365666205",
+    "firebase_url": "https://meetups-4bf77.firebaseio.com",
+    "project_id": "meetups-4bf77",
+    "storage_bucket": "meetups-4bf77.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581365666205:android:0fd04d36dbb5e33a",
+        "android_client_info": {
+          "package_name": "com.dusanjovanov.meetups3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581365666205-pme9iefqnrci8mqe1c8dd2vkm6h6cnav.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dusanjovanov.meetups3",
+            "certificate_hash": "4B5798ADA293378BBF2FBC3B78238E9CA813DEBA"
+          }
+        },
+        {
+          "client_id": "581365666205-l0rhj5ulcoifsk5prmtpe23rucu5706m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAib5q2BdcWyG8E5pc4TXuMzfoY1flXQHI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581365666205-l0rhj5ulcoifsk5prmtpe23rucu5706m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
