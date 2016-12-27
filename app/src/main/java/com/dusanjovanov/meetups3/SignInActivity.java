@@ -1,9 +1,9 @@
 package com.dusanjovanov.meetups3;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     public static final String TAG = "tagSignInActivity";
     private GoogleApiClient googleApiClient;
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser currentUser;
 
     //views
     private EditText edtEmail,edtPassword;
@@ -172,34 +175,56 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                            createUser(currentUser);
+                            currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                            createUser();
 
                         }
                     }
                 });
     }
 
-    private void createUser(FirebaseUser currentUser) {
-        GsonRequest<Response> request = new GsonRequest<>(
+    private void createUser() {
+        Map<String,String> params = new HashMap<>();
+        params.put("display_name",currentUser.getDisplayName());
+        params.put("email",currentUser.getEmail());
+        params.put("photo_url",String.valueOf(currentUser.getPhotoUrl()));
+        params.put("token","123");
+
+        StandardRequest<Response> request = new StandardRequest<>(
                 Request.Method.POST,
-                "192.168.1.7/api/v1/users",
-                new GsonRequest.ResponseListener<Response>() {
+                "/users",
+                params,
+                Response.class,
+                new StandardRequest.ResponseListener<Response>() {
                     @Override
                     public void onResponse(Response response) {
                         if(response.isError()){
-                            Log.e(TAG,"Error");
+                            Log.e(TAG,"Server error");
+                            deleteUserFirebase();
+                        }
+                        else{
+                            startActivity(new Intent(SignInActivity.this,MainScreenActivity.class));
+                            finish();
                         }
                     }
                 },
                 new com.android.volley.Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG,error.getMessage());
+                        Log.e(TAG,error.toString());
+                        deleteUserFirebase();
                     }
-                },
-                Response.class
+                }
         );
         VolleyHandler.getInstance(this).addToRequestQueue(request);
+    }
+
+    private void deleteUserFirebase(){
+        currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(SignInActivity.this, "Sign in failed. Try again later", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
