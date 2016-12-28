@@ -55,7 +55,6 @@ public class StandardRequest<T> extends Request<T> {
         return headers;
     }
 
-    //TODO
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
         return params;

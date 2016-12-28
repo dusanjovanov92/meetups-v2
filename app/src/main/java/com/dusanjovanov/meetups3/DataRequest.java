@@ -23,22 +23,25 @@ public class DataRequest<T> extends Request<T>{
     private final Gson gson = new Gson();
     private final Class<T> clazz;
     private final DataRequest.ResponseListener<T> listener;
-    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> headers;
+
+    {
+        headers = new HashMap<>();
+        headers.put("authorization","801bb1e7ebfc127b17fb1330335701c2");
+        headers.put("Content-Type","application/x-www-form-urlencoded");
+    }
 
     public interface ResponseListener<T> {
         void onResponse(T response);
     }
 
-    public DataRequest(int method,
-                       String url,
+    public DataRequest(String url,
                        Class<T> clazz,
                        ResponseListener<T> listener,
                        Response.ErrorListener errorListener) {
-        super(method, BASE_URL+url, errorListener);
+        super(Method.GET, BASE_URL+url, errorListener);
         this.clazz = clazz;
         this.listener = listener;
-        headers.put("authorization","801bb1e7ebfc127b17fb1330335701c2");
-        headers.put("Content-Type","application/x-www-form-urlencoded");
     }
 
     @Override
@@ -52,6 +55,7 @@ public class DataRequest<T> extends Request<T>{
             String json = new String(
                     response.data,
                     HttpHeaderParser.parseCharset(response.headers));
+
             return Response.success(
                     gson.fromJson(json, clazz),
                     HttpHeaderParser.parseCacheHeaders(response));
