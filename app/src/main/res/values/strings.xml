@@ -12,4 +12,7 @@
     <string name="google_play_error">This device is not compatible with Google Play Services which are required to run this app.</string>
     <string name="sign_in_activity_5">Email and password fields are empty</string>
     <string name="sign_in_activity_6">The email address you have entered is invalid</string>
+    <string name="action_sign_out">Sing out</string>
+    <string name="action_search">Search</string>
+    <string name="no_results_found">No results found.</string>
 </resources>
