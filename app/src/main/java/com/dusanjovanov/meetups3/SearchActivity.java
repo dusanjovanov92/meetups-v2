@@ -14,16 +14,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.dusanjovanov.meetups3.models.User;
+import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.rest.MeetupsAPI;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -100,32 +101,28 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void search(String query) {
-        DataRequest<User[]> request = new DataRequest<>(
-                "/users/search/" + query,
-                User[].class,
-                new DataRequest.ResponseListener<User[]>() {
-                    @Override
-                    public void onResponse(User[] response) {
-                        users.clear();
-                        if(response.length<1){
-                            txtNoResults.setVisibility(View.VISIBLE);
-                        }
-                        else{
-                            txtNoResults.setVisibility(View.GONE);
-                            users.addAll(Arrays.asList(response));
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
+        MeetupsAPI api = ApiClient.getRetrofit().create(MeetupsAPI.class);
+        Call<ArrayList<User>> call = api.searchUsers(query);
+        call.enqueue(new Callback<ArrayList<User>>() {
+            @Override
+            public void onResponse(Call<ArrayList<User>> call, retrofit2.Response<ArrayList<User>> response) {
+                users.clear();
+                if(response.body().size()<1){
+                    txtNoResults.setVisibility(View.VISIBLE);
                 }
-        );
+                else{
+                    txtNoResults.setVisibility(View.GONE);
+                    users.addAll(response.body());
+                }
+                adapter.notifyDataSetChanged();
+            }
 
-        VolleyHandler.getInstance(this).addToRequestQueue(request);
+            @Override
+            public void onFailure(Call<ArrayList<User>> call, Throwable t) {
+
+            }
+        });
+
     }
 
     @Override
