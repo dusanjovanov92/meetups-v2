@@ -10,13 +10,6 @@ public class User {
     private String email;
     private String photoUrl;
 
-    public User(int id, String displayName, String email, String photoUrl) {
-        this.id = id;
-        this.displayName = displayName;
-        this.email = email;
-        this.photoUrl = photoUrl;
-    }
-
     public int getId() {
         return id;
     }
