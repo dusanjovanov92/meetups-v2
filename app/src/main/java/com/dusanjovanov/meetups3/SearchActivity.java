@@ -10,19 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.dusanjovanov.meetups3.adapters.UsersRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
-import com.dusanjovanov.meetups3.rest.MeetupsAPI;
-import com.dusanjovanov.meetups3.util.InterfaceUtil;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -32,7 +27,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private RecyclerView rvSearchResults;
     private ArrayList<User> users = new ArrayList<>();
-    private RecyclerView.Adapter<UserViewHolder> adapter;
+    private UsersRecyclerAdapter adapter;
     private TextView txtNoResults;
 
     @Override
@@ -51,58 +46,14 @@ public class SearchActivity extends AppCompatActivity {
 
         rvSearchResults = (RecyclerView) findViewById(R.id.rv_search_results);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RecyclerView.Adapter<UserViewHolder>() {
-
-            @Override
-            public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new UserViewHolder(getLayoutInflater().inflate(R.layout.item_user_search,parent,false));
-            }
-
-            @Override
-            public void onBindViewHolder(UserViewHolder holder, int position) {
-                holder.bindModel(users.get(position));
-            }
-
-            @Override
-            public int getItemCount() {
-                return users.size();
-            }
-        };
+        adapter = new UsersRecyclerAdapter(this,users);
         rvSearchResults.setAdapter(adapter);
         txtNoResults = (TextView) findViewById(R.id.txt_no_results);
 
     }
 
-    class UserViewHolder extends RecyclerView.ViewHolder{
-
-        private ImageView ivProfileImage;
-        private CircleImageView civProfileImage;
-        private TextView txtDisplayName;
-
-        public UserViewHolder(View itemView) {
-            super(itemView);
-            this.ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
-            this.civProfileImage = (CircleImageView) itemView.findViewById(R.id.civ_profile_image);
-            this.txtDisplayName = (TextView) itemView.findViewById(R.id.txt_display_name);
-        }
-
-        void bindModel(User user){
-            if(user.getPhotoUrl()==null){
-                ivProfileImage.setImageDrawable(InterfaceUtil.getTextDrawable(user.getDisplayName()));
-            }
-            else{
-                ivProfileImage.setVisibility(View.GONE);
-                civProfileImage.setVisibility(View.VISIBLE);
-                Picasso.with(SearchActivity.this).load(user.getPhotoUrl()).into(civProfileImage);
-            }
-
-            txtDisplayName.setText(user.getDisplayName());
-        }
-    }
-
     private void search(String query) {
-        MeetupsAPI api = ApiClient.getRetrofit().create(MeetupsAPI.class);
-        Call<ArrayList<User>> call = api.searchUsers(query);
+        Call<ArrayList<User>> call = ApiClient.getApi().searchUsers(query);
         call.enqueue(new Callback<ArrayList<User>>() {
             @Override
             public void onResponse(Call<ArrayList<User>> call, retrofit2.Response<ArrayList<User>> response) {
