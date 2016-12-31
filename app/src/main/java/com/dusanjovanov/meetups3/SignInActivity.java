@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.FirebaseUtil;
+import com.dusanjovanov.meetups3.util.NetworkUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -203,6 +204,9 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                if(!NetworkUtil.isOnline(SignInActivity.this)){
+
+                }
                 deleteUserFirebase();
             }
         });

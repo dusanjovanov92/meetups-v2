@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.dusanjovanov.meetups3.adapters.UsersRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.NetworkUtil;
 
 import java.util.ArrayList;
 
@@ -25,7 +27,6 @@ public class SearchActivity extends AppCompatActivity {
 
     public static final String TAG = "tagSearchActivity";
 
-    private RecyclerView rvSearchResults;
     private ArrayList<User> users = new ArrayList<>();
     private UsersRecyclerAdapter adapter;
     private TextView txtNoResults;
@@ -44,7 +45,7 @@ public class SearchActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
-        rvSearchResults = (RecyclerView) findViewById(R.id.rv_search_results);
+        RecyclerView rvSearchResults = (RecyclerView) findViewById(R.id.rv_search_results);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
         adapter = new UsersRecyclerAdapter(this,users);
         rvSearchResults.setAdapter(adapter);
@@ -57,20 +58,27 @@ public class SearchActivity extends AppCompatActivity {
         call.enqueue(new Callback<ArrayList<User>>() {
             @Override
             public void onResponse(Call<ArrayList<User>> call, retrofit2.Response<ArrayList<User>> response) {
-                users.clear();
-                if(response.body().size()<1){
-                    txtNoResults.setVisibility(View.VISIBLE);
+                if(response.isSuccessful()){
+                    users.clear();
+                    if(response.body().size()<1){
+                        txtNoResults.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        txtNoResults.setVisibility(View.GONE);
+                        users.addAll(response.body());
+                    }
+                    adapter.notifyDataSetChanged();
                 }
                 else{
-                    txtNoResults.setVisibility(View.GONE);
-                    users.addAll(response.body());
+                    Log.e(TAG,"Server error");
                 }
-                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(Call<ArrayList<User>> call, Throwable t) {
+                if(!NetworkUtil.isOnline(SearchActivity.this)){
 
+                }
             }
         });
 
