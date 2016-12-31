@@ -10,9 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.VolleyError;
-import com.dusanjovanov.meetups3.models.Response;
+import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.FirebaseUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -29,10 +27,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,View.OnClickListener{
 
@@ -183,40 +183,30 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 });
     }
 
-    private void createUser() {
-        Map<String,String> params = new HashMap<>();
-        params.put("display_name",currentUser.getDisplayName());
-        params.put("email",currentUser.getEmail());
-        params.put("photo_url",String.valueOf(currentUser.getPhotoUrl()));
-        params.put("token","123");
+    private void createUser(){
+        Call<Void> call = ApiClient.getApi().createUser(currentUser.getDisplayName(),
+                currentUser.getEmail(),
+                String.valueOf(currentUser.getPhotoUrl()),
+                "123");
 
-        StandardRequest<Response> request = new StandardRequest<>(
-                Request.Method.POST,
-                "/users",
-                params,
-                Response.class,
-                new StandardRequest.ResponseListener<Response>() {
-                    @Override
-                    public void onResponse(Response response) {
-                        if(response.isError()){
-                            Log.e(TAG,"Server error");
-                            deleteUserFirebase();
-                        }
-                        else{
-                            startActivity(new Intent(SignInActivity.this,MainScreenActivity.class));
-                            finish();
-                        }
-                    }
-                },
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG,error.toString());
-                        deleteUserFirebase();
-                    }
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    startActivity(new Intent(SignInActivity.this,MainScreenActivity.class));
+                    finish();
                 }
-        );
-        VolleyHandler.getInstance(this).addToRequestQueue(request);
+                else{
+                    deleteUserFirebase();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                deleteUserFirebase();
+            }
+        });
+
     }
 
     private void deleteUserFirebase(){
