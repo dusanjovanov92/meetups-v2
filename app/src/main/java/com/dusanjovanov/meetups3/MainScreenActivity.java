@@ -18,7 +18,6 @@ import android.view.View;
 import com.dusanjovanov.meetups3.fragments.ContactsFragment;
 import com.dusanjovanov.meetups3.fragments.GroupsFragment;
 import com.dusanjovanov.meetups3.fragments.HomeFragment;
-import com.dusanjovanov.meetups3.fragments.SearchResultsFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainScreenActivity extends AppCompatActivity {
@@ -57,25 +56,11 @@ public class MainScreenActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if(hasFocus){
-                    pager.setCurrentItem(4);
+                    startActivity(new Intent(MainScreenActivity.this,SearchActivity.class));
                 }
                 else{
-                    onBackPressed();
-                }
-            }
-        });
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + pager.getCurrentItem());
-                ((SearchResultsFragment)fragment).search(query);
-                
-                return true;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
+                }
             }
         });
 
@@ -102,8 +87,6 @@ public class MainScreenActivity extends AppCompatActivity {
                     return new GroupsFragment();
                 case 2:
                     return new ContactsFragment();
-                case 4:
-                    return new SearchResultsFragment();
                 default:
                     return null;
             }
@@ -116,10 +99,10 @@ public class MainScreenActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         if(searchView!=null){
-            searchView.setIconified(true);
+            searchView.clearFocus();
         }
     }
 
