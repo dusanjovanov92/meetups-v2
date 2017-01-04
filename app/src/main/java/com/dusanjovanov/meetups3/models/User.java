@@ -1,10 +1,12 @@
 package com.dusanjovanov.meetups3.models;
 
+import java.io.Serializable;
+
 /**
  * Created by duca on 28/12/2016.
  */
 
-public class User {
+public class User implements Serializable{
     private int id;
     private String displayName;
     private String email;
