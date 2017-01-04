@@ -9,25 +9,6 @@
         android:layout_height="wrap_content"
         android:paddingTop="5dp">
 
-        <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/toolbar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="?attr/actionBarSize"-->
-            <!--android:background="?attr/colorPrimary"-->
-            <!--app:layout_scrollFlags="scroll|enterAlways"-->
-            <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
-            <!--android:paddingTop="10dp"-->
-            <!--android:focusableInTouchMode="true">-->
-            <!--<android.support.v7.widget.SearchView-->
-                <!--android:id="@+id/search"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:background="@color/icons"-->
-                <!--app:iconifiedByDefault="false"-->
-                <!--android:iconifiedByDefault="false"-->
-                <!--android:elevation="4dp"-->
-                <!--app:queryHint="Search for users..."/>-->
-        <!--</android.support.v7.widget.Toolbar>-->
         <include android:id="@+id/toolbar"
             layout="@layout/search_bar"/>
 

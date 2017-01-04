@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.FirebaseUtil;
 import com.dusanjovanov.meetups3.util.NetworkUtil;
@@ -131,7 +132,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                startActivity(new Intent(SignInActivity.this,MainScreenActivity.class));
+                                startActivity(new Intent(SignInActivity.this,MainActivity.class));
                                 finish();
                             }
                             else{
@@ -185,16 +186,16 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     private void createUser(){
-        Call<Void> call = ApiClient.getApi().createUser(currentUser.getDisplayName(),
+        Call<User> call = ApiClient.getApi().createUser(currentUser.getDisplayName(),
                 currentUser.getEmail(),
                 String.valueOf(currentUser.getPhotoUrl()),
                 "123");
 
-        call.enqueue(new Callback<Void>() {
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()){
-                    startActivity(new Intent(SignInActivity.this,MainScreenActivity.class));
+                    startActivity(new Intent(SignInActivity.this,MainActivity.class));
                     finish();
                 }
                 else{
@@ -203,7 +204,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 if(!NetworkUtil.isOnline(SignInActivity.this)){
 
                 }
