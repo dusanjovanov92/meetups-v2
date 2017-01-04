@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ApiClient {
-    public static final String BASE_URL = "http://192.168.1.7/api/v1/";
+    public static final String BASE_URL = "http://192.168.1.2/api/v1/";
 
     private static final OkHttpClient client = new OkHttpClient.Builder()
             .addInterceptor(new Interceptor() {
