@@ -18,6 +18,7 @@ import android.view.View;
 import com.dusanjovanov.meetups3.fragments.ContactsFragment;
 import com.dusanjovanov.meetups3.fragments.GroupsFragment;
 import com.dusanjovanov.meetups3.fragments.HomeFragment;
+import com.dusanjovanov.meetups3.fragments.ProfileFragment;
 import com.dusanjovanov.meetups3.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -84,7 +85,8 @@ public class MainScreenActivity extends AppCompatActivity {
     private void setTabIcons(){
         tabs.getTabAt(0).setIcon(R.drawable.tab_home);
         tabs.getTabAt(1).setIcon(R.drawable.tab_groups);
-        tabs.getTabAt(2).setIcon(R.drawable.tab_home);
+        tabs.getTabAt(2).setIcon(R.drawable.tab_contacts);
+        tabs.getTabAt(3).setIcon(R.drawable.tab_profile);
     }
 
     private class PagerAdapter extends FragmentPagerAdapter{
@@ -105,7 +107,17 @@ public class MainScreenActivity extends AppCompatActivity {
                     groupsFragment.setArguments(args);
                     return groupsFragment;
                 case 2:
-                    return new ContactsFragment();
+                    ContactsFragment contactsFragment = new ContactsFragment();
+                    Bundle args2 = new Bundle();
+                    args2.putSerializable("user",currentUser);
+                    contactsFragment.setArguments(args2);
+                    return contactsFragment;
+                case 3:
+                    ProfileFragment profileFragment = new ProfileFragment();
+                    Bundle args3 = new Bundle();
+                    args3.putSerializable("user",currentUser);
+                    profileFragment.setArguments(args3);
+                    return profileFragment;
                 default:
                     return null;
             }
@@ -113,7 +125,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
     }
 

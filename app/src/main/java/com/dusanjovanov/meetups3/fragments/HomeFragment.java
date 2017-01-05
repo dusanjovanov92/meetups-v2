@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.R;
 
@@ -15,12 +16,18 @@ import com.dusanjovanov.meetups3.R;
 
 public class HomeFragment extends Fragment {
 
+    private TextView txtContactRequestsNum;
+    private TextView txtGroupRequestsNum;
+
     public HomeFragment() {
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home,container,false);
+        View fragment = inflater.inflate(R.layout.fragment_home,container,false);
+        txtContactRequestsNum = (TextView) fragment.findViewById(R.id.txt_contact_requests_number);
+        txtGroupRequestsNum = (TextView) fragment.findViewById(R.id.txt_group_requests_number);
+        return fragment;
     }
 }

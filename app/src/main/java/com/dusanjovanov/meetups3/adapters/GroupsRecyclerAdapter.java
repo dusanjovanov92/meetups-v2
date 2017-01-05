@@ -46,16 +46,24 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     class GroupViewHolder extends RecyclerView.ViewHolder{
         private ImageView ivIcon;
         private TextView txtName;
+        private TextView txtMemberCount;
+        private TextView txtAdmin;
 
         public GroupViewHolder(View itemView) {
             super(itemView);
             ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
             txtName = (TextView) itemView.findViewById(R.id.txt_name);
+            txtMemberCount = (TextView) itemView.findViewById(R.id.txt_num_members);
+            txtAdmin = (TextView) itemView.findViewById(R.id.txt_admin);
         }
 
         void bindModel(Group model){
             ivIcon.setImageDrawable(InterfaceUtil.getTextDrawable(model.getName()));
             txtName.setText(model.getName());
+            txtMemberCount.setText(String.format(context.getString(R.string.item_group_num_members),model.getMemberCount()));
+            if(model.isAdmin()){
+                txtAdmin.setVisibility(View.VISIBLE);
+            }
         }
     }
 

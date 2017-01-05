@@ -9,6 +9,8 @@ public class Group {
     private int id;
     private String name;
     private String admin;
+    private boolean isAdmin;
+    private int memberCount;
 
     public int getId() {
         return id;
@@ -32,5 +34,21 @@ public class Group {
 
     public void setAdmin(String admin) {
         this.admin = admin;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public int getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(int memberCount) {
+        this.memberCount = memberCount;
     }
 }
