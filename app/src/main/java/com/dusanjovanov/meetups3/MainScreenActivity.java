@@ -99,7 +99,11 @@ public class MainScreenActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return new HomeFragment();
+                    HomeFragment homeFragment = new HomeFragment();
+                    Bundle args4 = new Bundle();
+                    args4.putSerializable("user",currentUser);
+                    homeFragment.setArguments(args4);
+                    return homeFragment;
                 case 1:
                     GroupsFragment groupsFragment = new GroupsFragment();
                     Bundle args = new Bundle();
