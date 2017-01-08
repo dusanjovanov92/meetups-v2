@@ -36,17 +36,21 @@
         android:textAppearance="@android:style/TextAppearance.Medium" />
 
     <ImageButton
+        android:id="@+id/btn_reject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_close_red_500_36dp"
-        android:background="@null"
+        android:background="?android:selectableItemBackground"
+        android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginEnd="10dp"/>
+        android:clickable="true"/>
 
     <ImageButton
+        android:id="@+id/btn_accept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_check_green_500_36dp"
-        android:background="@null"/>
+        android:background="?android:selectableItemBackground"
+        android:clickable="true"/>
 
 </LinearLayout>

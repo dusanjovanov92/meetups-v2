@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.HomeRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.ContactRequest;
-import com.dusanjovanov.meetups3.models.GroupUserRequest;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 
@@ -33,11 +32,9 @@ public class HomeFragment extends Fragment {
 
     private static final String TAG = "TagHomeFragment";
     private TextView txtContactRequestsNum;
-    private TextView txtGroupRequestsNum;
     private RecyclerView rvHome;
     private HomeRecyclerAdapter adapter;
     private ArrayList<ContactRequest> contactRequests = new ArrayList<>();
-    private ArrayList<GroupUserRequest> groupUserRequests = new ArrayList<>();
     private User currentUser;
     private Context context;
     private boolean refreshDisplay = false;
@@ -49,11 +46,11 @@ public class HomeFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        adapter = new HomeRecyclerAdapter(context,contactRequests, groupUserRequests);
         Bundle args = getArguments();
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
         }
+        adapter = new HomeRecyclerAdapter(context,contactRequests,currentUser);
     }
 
     @Nullable
@@ -61,7 +58,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_home,container,false);
         txtContactRequestsNum = (TextView) fragment.findViewById(R.id.txt_contact_requests_number);
-        txtGroupRequestsNum = (TextView) fragment.findViewById(R.id.txt_group_requests_number);
         rvHome = (RecyclerView) fragment.findViewById(R.id.rv_home);
         rvHome.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -86,7 +82,6 @@ public class HomeFragment extends Fragment {
         if(isVisibleToUser){
             if(refreshDisplay){
                 getContactRequests();
-                getGroupRequests();
             }
         }
     }
@@ -118,29 +113,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getGroupRequests(){
-        Call<ArrayList<GroupUserRequest>> call = ApiClient.getApi().getGroupUserRequests(currentUser.getId());
-        call.enqueue(new Callback<ArrayList<GroupUserRequest>>() {
-            @Override
-            public void onResponse(Call<ArrayList<GroupUserRequest>> call, Response<ArrayList<GroupUserRequest>> response) {
-                if(response.isSuccessful()){
-                    Log.d(TAG,response.raw().toString());
-                    Log.d(TAG,String.valueOf(response.body().size()));
-                    groupUserRequests.clear();
-                    int responseSize = response.body().size();
-                    txtGroupRequestsNum.setText(String.valueOf(responseSize));
-                    groupUserRequests.addAll(response.body());
-                    adapter.notifyDataSetChanged();
-                }
-                else{
 
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ArrayList<GroupUserRequest>> call, Throwable t) {
-
-            }
-        });
-    }
 }

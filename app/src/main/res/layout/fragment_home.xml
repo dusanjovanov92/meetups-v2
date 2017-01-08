@@ -14,15 +14,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_person_add_black_48dp"
-            android:gravity="center_horizontal"
-            android:layout_marginRight="20dp"
-            android:layout_marginEnd="20dp"/>
-
-        <TextView
-            android:id="@+id/txt_group_requests_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableTop="@drawable/ic_group_add_black_48dp"
             android:gravity="center_horizontal" />
     </LinearLayout>
 

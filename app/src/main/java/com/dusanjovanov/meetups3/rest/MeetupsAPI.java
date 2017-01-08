@@ -3,7 +3,6 @@ package com.dusanjovanov.meetups3.rest;
 import com.dusanjovanov.meetups3.models.Contact;
 import com.dusanjovanov.meetups3.models.ContactRequest;
 import com.dusanjovanov.meetups3.models.Group;
-import com.dusanjovanov.meetups3.models.GroupUserRequest;
 import com.dusanjovanov.meetups3.models.User;
 
 import java.util.ArrayList;
@@ -42,6 +41,6 @@ public interface MeetupsApi {
     @GET("users/{id_user}/contactRequests")
     Call<ArrayList<ContactRequest>> getContactRequests(@Path("id_user") int idUser);
 
-    @GET("users/{id_user}/groupRequests")
-    Call<ArrayList<GroupUserRequest>> getGroupUserRequests(@Path("id_user") int idUser);
+    @POST("users/{id_user1}/contacts/{id_user2}")
+    Call<Void> addToContacts(@Path("id_user1")int receivingUser, @Path("id_user2") int sendingUser);
 }
