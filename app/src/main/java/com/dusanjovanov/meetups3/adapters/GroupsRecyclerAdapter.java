@@ -79,7 +79,6 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
                                    RecyclerView parent, RecyclerView.State state) {
             outRect.left = space;
             outRect.right = space;
-            outRect.bottom = space;
         }
     }
 }

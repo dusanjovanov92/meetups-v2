@@ -1,9 +1,11 @@
 package com.dusanjovanov.meetups3.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.dusanjovanov.meetups3.ChatActivity;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.ContactsRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.Contact;
@@ -28,7 +31,7 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class ContactsFragment extends Fragment {
+public class ContactsFragment extends Fragment implements ContactsRecyclerAdapter.RowClickListener{
 
     public static final String TAG = "TagContactsFragment";
     private RecyclerView rvContacts;
@@ -37,6 +40,7 @@ public class ContactsFragment extends Fragment {
     private ArrayList<Contact> contacts = new ArrayList<>();
     private Context context;
     private User currentUser;
+    private boolean updateData = false;
 
     public ContactsFragment() {
     }
@@ -45,7 +49,7 @@ public class ContactsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        adapter = new ContactsRecyclerAdapter(context,contacts);
+        adapter = new ContactsRecyclerAdapter(context,contacts,this);
         Bundle args = getArguments();
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
@@ -61,13 +65,30 @@ public class ContactsFragment extends Fragment {
         rvContacts.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         rvContacts.setLayoutManager(layoutManager);
+        ContactsRecyclerAdapter.HorizontalDividerItemDecoration decoration =
+                new ContactsRecyclerAdapter.HorizontalDividerItemDecoration(ResourcesCompat.getDrawable(getResources(),R.drawable.item_divider,null));
+        rvContacts.addItemDecoration(decoration);
         return fragment;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getContacts();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateData = true;
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if(isVisibleToUser){
-            getContacts();
+            if(updateData){
+                getContacts();
+            }
         }
     }
 
@@ -98,5 +119,14 @@ public class ContactsFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onClick(Contact contact) {
+        Intent intent = new Intent(context, ChatActivity.class);
+        intent.putExtra("action",TAG);
+        intent.putExtra("user",currentUser);
+        intent.putExtra("contact",contact);
+        startActivity(intent);
     }
 }

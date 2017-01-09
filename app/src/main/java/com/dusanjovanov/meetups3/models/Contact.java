@@ -1,10 +1,12 @@
 package com.dusanjovanov.meetups3.models;
 
+import java.io.Serializable;
+
 /**
  * Created by duca on 5/1/2017.
  */
 
-public class Contact {
+public class Contact implements Serializable{
     private User user;
     private String firebaseNode;
 

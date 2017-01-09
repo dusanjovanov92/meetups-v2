@@ -30,6 +30,7 @@ import retrofit2.Response;
 
 public class HomeRecyclerAdapter extends RecyclerView.Adapter {
 
+    public static final String TAG = "HRecAdapter";
     private Context context;
     private ArrayList<ContactRequest> contactRequests;
     private User currentUser;
@@ -96,12 +97,12 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView ivProfileImage;
         private CircleImageView civProfileImage;
         private TextView txtDisplayName;
-        private ImageButton btnAccept,btnReject;
+        private ImageButton btnAccept, btnReject;
 
 
         public RowHolder(View itemView) {
@@ -132,25 +133,51 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            switch (view.getId()){
+            switch (view.getId()) {
                 case R.id.btn_accept:
-                    acceptRequest(contactRequests.get(getAdapterPosition()-1).getUser());
+                    acceptRequest(getAdapterPosition());
                     break;
                 case R.id.btn_reject:
+                    rejectRequest(getAdapterPosition());
                     break;
             }
         }
     }
 
-    private void acceptRequest(final User sendingUser){
-        Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(),sendingUser.getId());
+    private void acceptRequest(final int adapterPosition) {
+        final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
+        Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(), sendingUser.getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.isSuccessful()){
-                    Toast.makeText(context, "User "+sendingUser.getDisplayName()+" added to contacts.", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful()) {
+                    Toast.makeText(context, "Korisnik " + sendingUser.getDisplayName() + " je dodat u kontakte.", Toast.LENGTH_SHORT).show();
+                    contactRequests.remove(adapterPosition - 1);
+                    notifyItemRemoved(adapterPosition);
+                    notifyDataSetChanged();
+                } else {
+
                 }
-                else{
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void rejectRequest(final int adapterPosition) {
+        final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
+        Call<Void> call = ApiClient.getApi().deleteContactRequest(currentUser.getId(), sendingUser.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(context, "Zahtev je obrisan.", Toast.LENGTH_SHORT).show();
+                    contactRequests.remove(adapterPosition - 1);
+                    notifyItemRemoved(adapterPosition);
+                } else {
 
                 }
             }

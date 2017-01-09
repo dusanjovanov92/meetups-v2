@@ -37,6 +37,7 @@ public class GroupsFragment extends Fragment{
     private ArrayList<Group> groups = new ArrayList<>();
     private Context context;
     private User currentUser;
+    private boolean updateData = false;
 
     public GroupsFragment() {
     }
@@ -67,9 +68,23 @@ public class GroupsFragment extends Fragment{
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getGroups();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateData = true;
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if(isVisibleToUser){
-            getGroups();
+            if(updateData){
+                getGroups();
+            }
         }
     }
 

@@ -13,13 +13,29 @@ import com.dusanjovanov.meetups3.util.NetworkUtil;
 
 public class NetworkReceiver extends BroadcastReceiver {
 
+    private ConnectionChangeListener connectionChangeListener;
+
+    public interface ConnectionChangeListener{
+        void onDisconnected();
+        void onConnected();
+    }
+
+    public NetworkReceiver(ConnectionChangeListener connectionChangeListener) {
+        this.connectionChangeListener = connectionChangeListener;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
         if(!NetworkUtil.isOnline(context)){
-
+            connectionChangeListener.onDisconnected();
+        }
+        else{
+            connectionChangeListener.onConnected();
         }
 
 
     }
+
+
 }

@@ -8,6 +8,7 @@ import com.dusanjovanov.meetups3.models.User;
 import java.util.ArrayList;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -43,4 +44,7 @@ public interface MeetupsApi {
 
     @POST("users/{id_user1}/contacts/{id_user2}")
     Call<Void> addToContacts(@Path("id_user1")int receivingUser, @Path("id_user2") int sendingUser);
+
+    @DELETE("users/{id_user1}/contactRequests/{id_user2}")
+    Call<Void> deleteContactRequest(@Path("id_user1") int receivingUser, @Path("id_user2") int sendingUser);
 }
