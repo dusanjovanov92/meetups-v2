@@ -2,11 +2,14 @@ package com.dusanjovanov.meetups3;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,11 +48,34 @@ public class ChatActivity extends AppCompatActivity {
 
         handleIntent();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar!=null){
+            actionBar.setTitle(contact.getUser().getDisplayName());
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         setupRecyclerView();
         setupMessageViews();
 
+    }
+
+    private void handleIntent(){
+        Intent intent = getIntent();
+        String action = null;
+        if(intent!=null){
+            action = intent.getStringExtra("action");
+        }
+        if(action!=null){
+            if(action.equals(ContactsFragment.TAG)){
+                currentUser = (User) intent.getSerializableExtra("user");
+                contact = (Contact) intent.getSerializableExtra("contact");
+            }
+        }
     }
 
     private void setupMessageViews(){
@@ -83,20 +109,6 @@ public class ChatActivity extends AppCompatActivity {
                 sendMessage();
             }
         });
-    }
-
-    private void handleIntent(){
-        Intent intent = getIntent();
-        String action = null;
-        if(intent!=null){
-            action = intent.getStringExtra("action");
-        }
-        if(action!=null){
-            if(action.equals(ContactsFragment.TAG)){
-                currentUser = (User) intent.getSerializableExtra("user");
-                contact = (Contact) intent.getSerializableExtra("contact");
-            }
-        }
     }
 
     static class MessageViewHolder extends RecyclerView.ViewHolder{
@@ -174,4 +186,14 @@ public class ChatActivity extends AppCompatActivity {
         edtMessage.setText("");
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+
+        return true;
+    }
 }

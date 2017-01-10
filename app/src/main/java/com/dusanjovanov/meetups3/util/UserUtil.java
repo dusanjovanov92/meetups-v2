@@ -6,5 +6,6 @@ package com.dusanjovanov.meetups3.util;
 
 public class UserUtil {
 
-
+    public static final String EXTRA_CURRENT_USER = "current_user";
+    public static final String EXTRA_GROUP = "group";
 }

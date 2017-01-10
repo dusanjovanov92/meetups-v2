@@ -17,4 +17,6 @@
     <string name="no_results_found">No results found.</string>
     <string name="fragment_groups_no_groups">You currently have no groups.</string>
     <string name="item_group_num_members">"Broj članova: %1$d"</string>
+    <string name="fragment_group_info_meetings_progress">"%d sastanka u toku"</string>
+    <string name="fragment_group_info_next_meeting">Sledeći sastanak</string>
 </resources>

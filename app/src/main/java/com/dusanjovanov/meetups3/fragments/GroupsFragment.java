@@ -1,6 +1,7 @@
 package com.dusanjovanov.meetups3.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.dusanjovanov.meetups3.GroupActivity;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.GroupsRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.Group;
@@ -28,7 +30,7 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class GroupsFragment extends Fragment{
+public class GroupsFragment extends Fragment implements GroupsRecyclerAdapter.RowClickListener{
 
     public static final String TAG = "TagGroupsFragment";
     private RecyclerView rvGroups;
@@ -46,11 +48,12 @@ public class GroupsFragment extends Fragment{
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        adapter = new GroupsRecyclerAdapter(groups,context);
         Bundle args = getArguments();
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
         }
+        adapter = new GroupsRecyclerAdapter(groups,context,currentUser,this);
+
     }
 
     @Nullable
@@ -94,7 +97,7 @@ public class GroupsFragment extends Fragment{
             @Override
             public void onResponse(Call<ArrayList<Group>> call, Response<ArrayList<Group>> response) {
                 if(response.isSuccessful()){
-                    Log.v(TAG,response.raw().toString());
+                    Log.d(TAG,response.raw().toString());
                     groups.clear();
                     if(response.body().size()<1){
                         txtNoGroups.setVisibility(View.VISIBLE);
@@ -115,5 +118,14 @@ public class GroupsFragment extends Fragment{
 
             }
         });
+    }
+
+    @Override
+    public void onRowClick(Group group) {
+        Intent intent = new Intent(context, GroupActivity.class);
+        intent.putExtra("action", GroupsFragment.TAG);
+        intent.putExtra("current_user",currentUser);
+        intent.putExtra("group",group);
+        startActivity(intent);
     }
 }

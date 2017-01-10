@@ -20,7 +20,8 @@
         <activity android:name=".SignInActivity" />
         <activity android:name=".MainScreenActivity" />
         <activity android:name=".SearchActivity" />
-        <activity android:name=".ChatActivity"/>
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".GroupActivity"></activity>
     </application>
 
 </manifest>
