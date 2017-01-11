@@ -1,5 +1,7 @@
 package com.dusanjovanov.meetups3.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,7 @@ public class Group implements Serializable{
     private int memberCount;
     private Meeting nextMeeting;
     private int currentMeetingCount;
-    private List<User> members = new ArrayList<>();
-    private List<Meeting> meetings = new ArrayList<>();
+    private User[] members;
 
     public int getId() {
         return id;
@@ -67,19 +68,11 @@ public class Group implements Serializable{
         this.currentMeetingCount = currentMeetingCount;
     }
 
-    public List<User> getMembers() {
+    public User[] getMembers() {
         return members;
     }
 
-    public void setMembers(List<User> members) {
+    public void setMembers(User[] members) {
         this.members = members;
-    }
-
-    public List<Meeting> getMeetings() {
-        return meetings;
-    }
-
-    public void setMeetings(List<Meeting> meetings) {
-        this.meetings = meetings;
     }
 }

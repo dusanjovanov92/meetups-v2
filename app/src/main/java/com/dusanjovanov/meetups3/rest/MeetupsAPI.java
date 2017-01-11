@@ -47,4 +47,11 @@ public interface MeetupsApi {
 
     @DELETE("users/{id_user1}/contactRequests/{id_user2}")
     Call<Void> deleteContactRequest(@Path("id_user1") int receivingUser, @Path("id_user2") int sendingUser);
+
+    @GET("groups/{id_group}/meetings")
+    Call<String> getGroupMeetings(@Path("id_group") int idGroup);
+
+    @GET("groups/{id_group}")
+    Call<Group> getGroup(@Path("id_group") int idGroup);
+
 }

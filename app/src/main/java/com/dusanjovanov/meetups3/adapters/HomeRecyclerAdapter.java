@@ -45,7 +45,7 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (viewType == R.id.header) {
-            return new HeaderHolder(inflater.inflate(R.layout.item_home_header, parent, false));
+            return new HeaderHolder(inflater.inflate(R.layout.item_header, parent, false));
         } else {
             return new RowHolder(inflater.inflate(R.layout.item_request, parent, false));
         }
