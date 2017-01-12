@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.dusanjovanov.meetups3.ChatActivity;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.ContactsRecyclerAdapter;
+import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
 import com.dusanjovanov.meetups3.models.Contact;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
@@ -65,8 +66,8 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
         rvContacts.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         rvContacts.setLayoutManager(layoutManager);
-        ContactsRecyclerAdapter.HorizontalDividerItemDecoration decoration =
-                new ContactsRecyclerAdapter.HorizontalDividerItemDecoration(ResourcesCompat.getDrawable(getResources(),R.drawable.item_divider,null));
+        HorizontalDividerItemDecoration decoration =
+                new HorizontalDividerItemDecoration(ResourcesCompat.getDrawable(getResources(),R.drawable.item_divider,null),false);
         rvContacts.addItemDecoration(decoration);
         return fragment;
     }

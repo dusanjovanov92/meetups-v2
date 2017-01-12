@@ -3,6 +3,8 @@ package com.dusanjovanov.meetups3.util;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.util.Calendar;
+
 /**
  * Created by duca on 28/12/2016.
  */

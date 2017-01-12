@@ -19,4 +19,13 @@
     <string name="item_group_num_members">"Broj članova: %1$d"</string>
     <string name="fragment_group_info_meetings_progress">"%d sastanka u toku"</string>
     <string name="fragment_group_info_next_meeting">Sledeći sastanak</string>
+    <string-array name="days_of_week">
+        <item>Ponedeljak</item>
+        <item>Utorak</item>
+        <item>Sreda</item>
+        <item>Četvrtak</item>
+        <item>Petak</item>
+        <item>Subota</item>
+        <item>Nedelja</item>
+    </string-array>
 </resources>

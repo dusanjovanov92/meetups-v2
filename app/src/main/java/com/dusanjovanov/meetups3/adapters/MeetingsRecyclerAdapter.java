@@ -1,6 +1,7 @@
 package com.dusanjovanov.meetups3.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.models.Meeting;
+import com.dusanjovanov.meetups3.util.DateTimeUtil;
 
 import java.util.ArrayList;
 
@@ -61,8 +63,23 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
 
         void bindModel(Meeting model){
             txtLabel.setText(model.getLabel());
-            txtTime.setText(String.valueOf(model.getStartTime()));
-            ivIcon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_event_black_36dp,null));
+            txtTime.setText(new DateTimeUtil(context).getTime(model.getStartTime()));
+            int icon = R.drawable.ic_event_black_36dp;
+
+            switch (DateTimeUtil.getProximity(model.getStartTime())){
+                case DateTimeUtil.IN_PROGRESS:
+                    icon = R.drawable.ic_event_green_36dp;
+                    break;
+                case DateTimeUtil.THIS_HOUR:
+                case DateTimeUtil.THIS_DAY:
+                    icon = R.drawable.ic_event_blue_36dp;
+                    break;
+                case DateTimeUtil.THIS_WEEK:
+                case DateTimeUtil.FAR:
+                    icon = R.drawable.ic_event_black_36dp;
+                    break;
+            }
+            ivIcon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),icon,null));
         }
     }
 }

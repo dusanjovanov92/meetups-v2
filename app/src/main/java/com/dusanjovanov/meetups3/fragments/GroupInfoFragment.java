@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,14 +15,15 @@ import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.MembersRecyclerAdapter;
+import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
 import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.DateTimeUtil;
 import com.dusanjovanov.meetups3.util.UserUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,7 +57,7 @@ public class GroupInfoFragment extends Fragment {
             currentUser = (User) args.getSerializable(UserUtil.EXTRA_CURRENT_USER);
             group = (Group) args.getSerializable(UserUtil.EXTRA_GROUP);
         }
-        adapter = new MembersRecyclerAdapter(context,members);
+        adapter = new MembersRecyclerAdapter(context,members,group.getAdmin());
     }
 
     @Nullable
@@ -69,6 +71,9 @@ public class GroupInfoFragment extends Fragment {
         rvMembers = (RecyclerView) fragment.findViewById(R.id.rv_members);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         rvMembers.setLayoutManager(layoutManager);
+        HorizontalDividerItemDecoration decoration =
+                new HorizontalDividerItemDecoration(ResourcesCompat.getDrawable(getResources(),R.drawable.item_divider,null),true);
+        rvMembers.addItemDecoration(decoration);
         rvMembers.setAdapter(adapter);
 
         return fragment;
@@ -94,7 +99,7 @@ public class GroupInfoFragment extends Fragment {
         Meeting nextMeeting = group.getNextMeeting();
         if(nextMeeting!=null){
             txtNextMeetingLabel.setText(nextMeeting.getLabel());
-            txtNextMeetingTime.setText(String.valueOf(nextMeeting.getStartTime()));
+            txtNextMeetingTime.setText(new DateTimeUtil(context).getTime(nextMeeting.getStartTime()));
         }
         else{
             txtNextMeeting.setText("Nema novih sastanaka");
@@ -125,9 +130,12 @@ public class GroupInfoFragment extends Fragment {
                 if(response.isSuccessful()){
                     group = response.body();
                     setupViews();
-                    Log.d(TAG,String.valueOf(group.getMembers().length));
+                    Log.d(TAG,String.valueOf(group.getMembers().size()));
+                    for(User member : group.getMembers()){
+                        Log.d(TAG,member.getDisplayName());
+                    }
                     members.clear();
-                    members.addAll(Arrays.asList(group.getMembers()));
+                    members.addAll(group.getMembers());
                     adapter.notifyDataSetChanged();
                 }
             }

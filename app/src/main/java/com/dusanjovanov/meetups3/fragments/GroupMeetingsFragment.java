@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.MeetingsRecyclerAdapter;
+import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
 import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.models.User;
@@ -61,6 +63,9 @@ public class GroupMeetingsFragment extends Fragment {
         rvMeetings = (RecyclerView) fragment.findViewById(R.id.rv_meetings);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         rvMeetings.setLayoutManager(layoutManager);
+        HorizontalDividerItemDecoration decoration =
+                new HorizontalDividerItemDecoration(ResourcesCompat.getDrawable(getResources(),R.drawable.item_divider,null),false);
+        rvMeetings.addItemDecoration(decoration);
         rvMeetings.setAdapter(adapter);
         return fragment;
     }

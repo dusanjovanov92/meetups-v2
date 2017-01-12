@@ -5,12 +5,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.models.User;
+import com.dusanjovanov.meetups3.util.InterfaceUtil;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by duca on 11/1/2017.
@@ -21,10 +26,12 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private Context context;
     private ArrayList<User> members;
     private LayoutInflater layoutInflater;
+    private User admin;
 
-    public MembersRecyclerAdapter(Context context, ArrayList<User> members) {
+    public MembersRecyclerAdapter(Context context, ArrayList<User> members,User admin) {
         this.context = context;
         this.members = members;
+        this.admin = admin;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -41,28 +48,23 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof HeaderHolder){
-            String header = null;
-            if(position==0){
-                header = "Administrator";
-            }
-            else{
-                header = "Članovi";
-            }
-            ((HeaderHolder) holder).bindModel(header);
+            ((HeaderHolder) holder).bindModel("Članovi");
         }
         else{
-            ((RowHolder)holder).bindModel(members.get(position));
+            if(members.size()!=0){
+                ((RowHolder)holder).bindModel(members.get(position-1));
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        return members.size()+2;
+        return members.size()+1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position==0 || position==2){
+        if(position==0){
             return R.id.header;
         }
         else{
@@ -70,11 +72,11 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    class HeaderHolder extends RecyclerView.ViewHolder{
+    private class HeaderHolder extends RecyclerView.ViewHolder{
 
         private TextView txtHeader;
 
-        public HeaderHolder(View itemView) {
+        HeaderHolder(View itemView) {
             super(itemView);
             txtHeader = (TextView) itemView.findViewById(R.id.txt_header);
         }
@@ -84,14 +86,37 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         }
     }
 
-    class RowHolder extends RecyclerView.ViewHolder{
+    private class RowHolder extends RecyclerView.ViewHolder{
 
-        public RowHolder(View itemView) {
+        private ImageView ivProfileImage;
+        private CircleImageView civProfileImage;
+        private TextView txtDisplayName;
+        private ImageView ivAdmin;
+
+        RowHolder(View itemView) {
             super(itemView);
+            ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
+            civProfileImage = (CircleImageView) itemView.findViewById(R.id.civ_profile_image);
+            txtDisplayName = (TextView) itemView.findViewById(R.id.txt_display_name);
+            ivAdmin = (ImageView) itemView.findViewById(R.id.iv_admin);
         }
 
         void bindModel(User model){
+            if(model.getPhotoUrl()==null){
+                ivProfileImage.setImageDrawable(InterfaceUtil.getTextDrawable(model.getDisplayName()));
+            }
+            else{
+                ivProfileImage.setVisibility(View.GONE);
+                civProfileImage.setVisibility(View.VISIBLE);
+                Picasso.with(context).load(model.getPhotoUrl()).into(civProfileImage);
+            }
 
+            txtDisplayName.setText(model.getDisplayName());
+
+            if(model.getId()==admin.getId()){
+                ivAdmin.setVisibility(View.VISIBLE);
+                ivAdmin.setImageDrawable(InterfaceUtil.getTextDrawable("A"));
+            }
         }
     }
 }
