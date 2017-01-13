@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.ChatActivity;
@@ -55,6 +56,11 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
         }
+
+        TableRow tr1 = new TableRow(context);
+        tr1.setLayoutParams(new TableRow.LayoutParams( TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        TextView textview = new TextView(context);
+        textview.setText("asdsad");
     }
 
     @Nullable
@@ -107,8 +113,8 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
                     else{
                         txtNoResults.setVisibility(View.GONE);
                         contacts.addAll(response.body());
-                        adapter.notifyDataSetChanged();
                     }
+                    adapter.notifyDataSetChanged();
                 }
                 else{
 

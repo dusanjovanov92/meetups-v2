@@ -21,6 +21,7 @@ import com.dusanjovanov.meetups3.fragments.ContactsFragment;
 import com.dusanjovanov.meetups3.models.ChatMessage;
 import com.dusanjovanov.meetups3.models.Contact;
 import com.dusanjovanov.meetups3.models.User;
+import com.dusanjovanov.meetups3.util.DateTimeUtil;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -40,6 +41,7 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayoutManager layoutManager;
     private EditText edtMessage;
     private Button btnSend;
+    private DateTimeUtil dateTimeUtil = new DateTimeUtil(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +156,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 viewHolder.txtDisplayName.setText(model.getDisplayName());
                 viewHolder.txtMessage.setText(model.getMessage());
-                viewHolder.txtTime.setText(String.valueOf(model.getTime()));
+                viewHolder.txtTime.setText(dateTimeUtil.getChatTime(model.getTime()));
             }
         };
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {

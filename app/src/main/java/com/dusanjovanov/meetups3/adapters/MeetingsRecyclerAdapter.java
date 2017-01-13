@@ -1,7 +1,6 @@
 package com.dusanjovanov.meetups3.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -63,15 +62,20 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
 
         void bindModel(Meeting model){
             txtLabel.setText(model.getLabel());
-            txtTime.setText(new DateTimeUtil(context).getTime(model.getStartTime()));
+            txtTime.setText(new DateTimeUtil(context).getMeetingTime(model.getStartTime()));
             int icon = R.drawable.ic_event_black_36dp;
 
-            switch (DateTimeUtil.getProximity(model.getStartTime())){
-                case DateTimeUtil.IN_PROGRESS:
+            switch (DateTimeUtil.getProximity(model.getStartTime()*1000)){
+                case DateTimeUtil.THIS_HOUR_BEFORE:
+                case DateTimeUtil.TODAY_BEFORE:
+                case DateTimeUtil.YESTERDAY:
+                case DateTimeUtil.LAST_WEEK:
+                case DateTimeUtil.BEFORE:
                     icon = R.drawable.ic_event_green_36dp;
                     break;
-                case DateTimeUtil.THIS_HOUR:
-                case DateTimeUtil.THIS_DAY:
+                case DateTimeUtil.THIS_HOUR_AFTER:
+                case DateTimeUtil.TODAY_AFTER:
+                case DateTimeUtil.TOMORROW:
                     icon = R.drawable.ic_event_blue_36dp;
                     break;
                 case DateTimeUtil.THIS_WEEK:

@@ -99,7 +99,7 @@ public class GroupInfoFragment extends Fragment {
         Meeting nextMeeting = group.getNextMeeting();
         if(nextMeeting!=null){
             txtNextMeetingLabel.setText(nextMeeting.getLabel());
-            txtNextMeetingTime.setText(new DateTimeUtil(context).getTime(nextMeeting.getStartTime()));
+            txtNextMeetingTime.setText(new DateTimeUtil(context).getMeetingTime(nextMeeting.getStartTime()));
         }
         else{
             txtNextMeeting.setText("Nema novih sastanaka");

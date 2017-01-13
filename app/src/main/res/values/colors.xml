@@ -10,4 +10,5 @@
     <color name="divider">#BDBDBD</color>
     <color name="green">#6ab344</color>
     <color name="red">#F44336</color>
+    <color name="chat_message_grey">#c5cedd</color>
 </resources>

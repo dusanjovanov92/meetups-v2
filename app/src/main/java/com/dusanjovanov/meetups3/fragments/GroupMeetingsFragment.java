@@ -20,7 +20,6 @@ import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.UserUtil;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -99,14 +98,14 @@ public class GroupMeetingsFragment extends Fragment {
                 Gson gson = new Gson();
                 Type type = new TypeToken<ArrayList<Meeting>>(){}.getType();
                 ArrayList<Meeting> meetings = gson.fromJson(response.body(),type);
+                GroupMeetingsFragment.this.meetings.clear();
                 if(meetings.size()==0){
 
                 }
                 else{
-                    GroupMeetingsFragment.this.meetings.clear();
                     GroupMeetingsFragment.this.meetings.addAll(meetings);
-                    adapter.notifyDataSetChanged();
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
