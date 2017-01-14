@@ -24,13 +24,13 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     private ArrayList<Group> groups;
     private Context context;
     private User currentUser;
-    private GroupsRecyclerAdapter.RowClickListener rowClickListener;
+    private InterfaceUtil.RowClickListener rowClickListener;
 
     public interface RowClickListener{
         void onRowClick(Group group);
     }
 
-    public GroupsRecyclerAdapter(ArrayList<Group> groups, Context context, User currentUser, GroupsRecyclerAdapter.RowClickListener rowClickListener) {
+    public GroupsRecyclerAdapter(ArrayList<Group> groups, Context context, User currentUser, InterfaceUtil.RowClickListener rowClickListener) {
         this.groups = groups;
         this.context = context;
         this.currentUser = currentUser;

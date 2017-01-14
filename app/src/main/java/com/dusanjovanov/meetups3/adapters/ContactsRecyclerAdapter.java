@@ -1,8 +1,6 @@
 package com.dusanjovanov.meetups3.adapters;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,13 +25,9 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
 
     private Context context;
     private ArrayList<Contact> contacts;
-    private RowClickListener rowClickListener;
+    private InterfaceUtil.RowClickListener rowClickListener;
 
-    public interface RowClickListener{
-        void onClick(Contact contact);
-    }
-
-    public ContactsRecyclerAdapter(Context context, ArrayList<Contact> contacts,RowClickListener rowClickListener) {
+    public ContactsRecyclerAdapter(Context context, ArrayList<Contact> contacts,InterfaceUtil.RowClickListener rowClickListener) {
         this.context = context;
         this.contacts = contacts;
         this.rowClickListener = rowClickListener;
@@ -73,7 +67,7 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
         @Override
         public void onClick(View view) {
             Contact contact = contacts.get(getAdapterPosition());
-            rowClickListener.onClick(contact);
+            rowClickListener.onRowClick(contact);
         }
 
         void bindModel(Contact model){

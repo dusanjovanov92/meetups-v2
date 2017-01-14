@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    android:id="@+id/cl_main"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cl_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,8 +10,9 @@
         android:layout_height="wrap_content"
         android:paddingTop="5dp">
 
-        <include android:id="@+id/toolbar"
-            layout="@layout/app_bar"/>
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/app_bar" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
@@ -33,8 +33,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        app:fabSize="normal"
-        android:src="@drawable/ic_alarm_add_black_24dp"
+        android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"/>
+        android:src="@drawable/ic_alarm_add_black_24dp"
+        app:fabSize="normal" />
 </android.support.design.widget.CoordinatorLayout>

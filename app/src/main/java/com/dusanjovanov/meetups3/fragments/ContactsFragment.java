@@ -22,7 +22,9 @@ import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
 import com.dusanjovanov.meetups3.models.Contact;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.InterfaceUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -33,7 +35,7 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class ContactsFragment extends Fragment implements ContactsRecyclerAdapter.RowClickListener{
+public class ContactsFragment extends Fragment implements InterfaceUtil.RowClickListener{
 
     public static final String TAG = "TagContactsFragment";
     private RecyclerView rvContacts;
@@ -129,11 +131,11 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
     }
 
     @Override
-    public void onClick(Contact contact) {
+    public void onRowClick(Serializable serializable) {
         Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra("action",TAG);
         intent.putExtra("user",currentUser);
-        intent.putExtra("contact",contact);
+        intent.putExtra("contact",serializable);
         startActivity(intent);
     }
 }

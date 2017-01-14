@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.util.DateTimeUtil;
+import com.dusanjovanov.meetups3.util.InterfaceUtil;
 
 import java.util.ArrayList;
 
@@ -24,11 +25,14 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
     private Context context;
     private ArrayList<Meeting> meetings;
     private LayoutInflater layoutInflater;
+    private InterfaceUtil.RowClickListener rowClickListener;
 
-    public MeetingsRecyclerAdapter(Context context, ArrayList<Meeting> meetings) {
+
+    public MeetingsRecyclerAdapter(Context context, ArrayList<Meeting> meetings,InterfaceUtil.RowClickListener rowClickListener) {
         this.context = context;
         this.meetings = meetings;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.rowClickListener = rowClickListener;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
         return meetings.size();
     }
 
-    class RowHolder extends RecyclerView.ViewHolder{
+    class RowHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView txtLabel;
         TextView txtTime;
@@ -58,6 +62,7 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
             txtLabel = (TextView) itemView.findViewById(R.id.txt_label);
             txtTime = (TextView) itemView.findViewById(R.id.txt_time);
             ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            itemView.setOnClickListener(this);
         }
 
         void bindModel(Meeting model){
@@ -84,6 +89,11 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
                     break;
             }
             ivIcon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),icon,null));
+        }
+
+        @Override
+        public void onClick(View view) {
+            rowClickListener.onRowClick(meetings.get(getAdapterPosition()));
         }
     }
 }

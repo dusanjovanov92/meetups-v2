@@ -3,9 +3,11 @@ package com.dusanjovanov.meetups3.rest;
 import com.dusanjovanov.meetups3.models.Contact;
 import com.dusanjovanov.meetups3.models.ContactRequest;
 import com.dusanjovanov.meetups3.models.Group;
+import com.dusanjovanov.meetups3.models.MeetingResponse;
 import com.dusanjovanov.meetups3.models.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.DELETE;
@@ -53,5 +55,8 @@ public interface MeetupsApi {
 
     @GET("groups/{id_group}")
     Call<Group> getGroup(@Path("id_group") int idGroup);
+
+    @GET("meetings/{id_meeting}/responses")
+    Call<List<MeetingResponse>> getMeetingResponses(@Path("id_meeting") int idMeeting);
 
 }

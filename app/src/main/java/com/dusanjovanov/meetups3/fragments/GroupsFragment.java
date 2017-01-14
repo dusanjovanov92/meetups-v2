@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.GroupActivity;
 import com.dusanjovanov.meetups3.R;
@@ -19,7 +18,9 @@ import com.dusanjovanov.meetups3.adapters.GroupsRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.InterfaceUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -30,11 +31,10 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class GroupsFragment extends Fragment implements GroupsRecyclerAdapter.RowClickListener{
+public class GroupsFragment extends Fragment implements InterfaceUtil.RowClickListener{
 
     public static final String TAG = "TagGroupsFragment";
     private RecyclerView rvGroups;
-    private TextView txtNoGroups;
     private GroupsRecyclerAdapter adapter;
     private ArrayList<Group> groups = new ArrayList<>();
     private Context context;
@@ -66,7 +66,6 @@ public class GroupsFragment extends Fragment implements GroupsRecyclerAdapter.Ro
         rvGroups.setLayoutManager(layoutManager);
         GroupsRecyclerAdapter.SpacesItemDecoration itemDecoration = new GroupsRecyclerAdapter.SpacesItemDecoration(10);
         rvGroups.addItemDecoration(itemDecoration);
-        txtNoGroups = (TextView) fragment.findViewById(R.id.txt_no_groups);
         return fragment;
     }
 
@@ -99,14 +98,8 @@ public class GroupsFragment extends Fragment implements GroupsRecyclerAdapter.Ro
                 if(response.isSuccessful()){
                     Log.d(TAG,response.raw().toString());
                     groups.clear();
-                    if(response.body().size()<1){
-                        txtNoGroups.setVisibility(View.VISIBLE);
-                    }
-                    else{
-                        txtNoGroups.setVisibility(View.GONE);
-                        groups.addAll(response.body());
-                        adapter.notifyDataSetChanged();
-                    }
+                    groups.addAll(response.body());
+                    adapter.notifyDataSetChanged();
                 }
                 else{
 
@@ -121,11 +114,11 @@ public class GroupsFragment extends Fragment implements GroupsRecyclerAdapter.Ro
     }
 
     @Override
-    public void onRowClick(Group group) {
+    public void onRowClick(Serializable serializable) {
         Intent intent = new Intent(context, GroupActivity.class);
         intent.putExtra("action", GroupsFragment.TAG);
         intent.putExtra("current_user",currentUser);
-        intent.putExtra("group",group);
+        intent.putExtra("group",serializable);
         startActivity(intent);
     }
 }

@@ -20,8 +20,8 @@ import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.ConstantsUtil;
 import com.dusanjovanov.meetups3.util.DateTimeUtil;
-import com.dusanjovanov.meetups3.util.UserUtil;
 
 import java.util.ArrayList;
 
@@ -54,8 +54,8 @@ public class GroupInfoFragment extends Fragment {
         this.context = context;
         Bundle args = getArguments();
         if(args!=null){
-            currentUser = (User) args.getSerializable(UserUtil.EXTRA_CURRENT_USER);
-            group = (Group) args.getSerializable(UserUtil.EXTRA_GROUP);
+            currentUser = (User) args.getSerializable(ConstantsUtil.EXTRA_CURRENT_USER);
+            group = (Group) args.getSerializable(ConstantsUtil.EXTRA_GROUP);
         }
         adapter = new MembersRecyclerAdapter(context,members,group.getAdmin());
     }

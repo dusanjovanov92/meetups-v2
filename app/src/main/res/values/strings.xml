@@ -28,4 +28,9 @@
         <item>Subota</item>
         <item>Nedelja</item>
     </string-array>
+    <string-array name="response_choices">
+        <item>Prisustvujem</item>
+        <item>Ne prisustvujem</item>
+    </string-array>
+    <string name="cancel">Otkaži</string>
 </resources>

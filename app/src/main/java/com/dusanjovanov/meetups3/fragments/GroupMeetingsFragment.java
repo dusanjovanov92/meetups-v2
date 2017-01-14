@@ -1,6 +1,7 @@
 package com.dusanjovanov.meetups3.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dusanjovanov.meetups3.MeetingActivity;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.MeetingsRecyclerAdapter;
 import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
@@ -18,10 +20,12 @@ import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
-import com.dusanjovanov.meetups3.util.UserUtil;
+import com.dusanjovanov.meetups3.util.ConstantsUtil;
+import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -33,8 +37,9 @@ import retrofit2.Response;
  * Created by duca on 10/1/2017.
  */
 
-public class GroupMeetingsFragment extends Fragment {
+public class GroupMeetingsFragment extends Fragment implements InterfaceUtil.RowClickListener{
 
+    public static final String TAG = "GMFrag";
     private Group group;
     private User currentUser;
     private Context context;
@@ -49,10 +54,10 @@ public class GroupMeetingsFragment extends Fragment {
         this.context = context;
         Bundle args = getArguments();
         if(args!=null){
-            currentUser = (User) args.getSerializable(UserUtil.EXTRA_CURRENT_USER);
-            group = (Group) args.getSerializable(UserUtil.EXTRA_GROUP);
+            currentUser = (User) args.getSerializable(ConstantsUtil.EXTRA_CURRENT_USER);
+            group = (Group) args.getSerializable(ConstantsUtil.EXTRA_GROUP);
         }
-        adapter = new MeetingsRecyclerAdapter(context,meetings);
+        adapter = new MeetingsRecyclerAdapter(context,meetings,this);
     }
 
     @Nullable
@@ -115,4 +120,13 @@ public class GroupMeetingsFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onRowClick(Serializable serializable) {
+        Intent intent = new Intent(context, MeetingActivity.class);
+        intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
+        intent.putExtra(ConstantsUtil.EXTRA_GROUP,group);
+        intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
+        intent.putExtra(ConstantsUtil.EXTRA_MEETING,serializable);
+        startActivity(intent);
+    }
 }
