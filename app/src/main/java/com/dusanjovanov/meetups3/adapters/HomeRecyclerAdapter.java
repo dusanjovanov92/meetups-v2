@@ -170,27 +170,49 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     private void acceptRequest(final int adapterPosition) {
+        final int contactRequestsSize = contactRequests.size();
 
-        final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
-        Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(), sendingUser.getId());
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(context, "Korisnik " + sendingUser.getDisplayName() + " je dodat u kontakte.", Toast.LENGTH_SHORT).show();
-                    contactRequests.remove(adapterPosition - 1);
-                    notifyItemRemoved(adapterPosition);
-                    notifyDataSetChanged();
-                } else {
+        if(adapterPosition>contactRequests.size()){
+            final Group group = groupRequests.get(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize)).getGroup();
+            Call<Void> call = ApiClient.getApi().addMember(group.getId(),currentUser.getId());
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if(response.isSuccessful()){
+                        Toast.makeText(context, "Postali ste član grupe "+ group.getName(), Toast.LENGTH_SHORT).show();
+                        groupRequests.remove(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize));
+                        notifyItemRemoved(adapterPosition);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
 
                 }
-            }
+            });
+        }
+        else{
+            final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
+            Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(), sendingUser.getId());
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(context, "Korisnik " + sendingUser.getDisplayName() + " je dodat u kontakte.", Toast.LENGTH_SHORT).show();
+                        contactRequests.remove(adapterPosition - 1);
+                        notifyItemRemoved(adapterPosition);
+                        notifyDataSetChanged();
+                    } else {
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+                    }
+                }
 
-            }
-        });
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+
+                }
+            });
+        }
     }
 
     private void rejectRequest(final int adapterPosition) {

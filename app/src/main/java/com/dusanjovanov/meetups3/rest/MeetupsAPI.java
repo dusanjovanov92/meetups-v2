@@ -64,4 +64,7 @@ public interface MeetupsApi {
     @DELETE("users/{id_user1}/contacts/{id_user2}")
     Call<Void> deleteContact(@Path("id_user1") int idUser1, @Path("id_user2") int idUser2);
 
+    @POST("groups/{id_group}/memberRequests/{id_user}")
+    Call<Void> addMember(@Path("id_group") int idGroup,@Path("id_user") int idUser);
+
 }
