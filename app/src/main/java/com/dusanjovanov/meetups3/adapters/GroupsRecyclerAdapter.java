@@ -24,17 +24,17 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     private ArrayList<Group> groups;
     private Context context;
     private User currentUser;
-    private InterfaceUtil.RowClickListener rowClickListener;
+    private InterfaceUtil.OnRowClickListener listener;
 
     public interface RowClickListener{
         void onRowClick(Group group);
     }
 
-    public GroupsRecyclerAdapter(ArrayList<Group> groups, Context context, User currentUser, InterfaceUtil.RowClickListener rowClickListener) {
+    public GroupsRecyclerAdapter(ArrayList<Group> groups, Context context, User currentUser, InterfaceUtil.OnRowClickListener listener) {
         this.groups = groups;
         this.context = context;
         this.currentUser = currentUser;
-        this.rowClickListener = rowClickListener;
+        this.listener = listener;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
 
         @Override
         public void onClick(View view) {
-            rowClickListener.onRowClick(groups.get(getAdapterPosition()));
+            listener.onRowClick(groups.get(getAdapterPosition()));
         }
     }
 

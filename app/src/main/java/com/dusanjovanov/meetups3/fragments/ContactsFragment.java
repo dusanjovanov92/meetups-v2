@@ -1,6 +1,7 @@
 package com.dusanjovanov.meetups3.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,12 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.ChatActivity;
 import com.dusanjovanov.meetups3.R;
@@ -35,11 +34,10 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class ContactsFragment extends Fragment implements InterfaceUtil.RowClickListener{
+public class ContactsFragment extends Fragment implements ContactsRecyclerAdapter.OnRowClickListener {
 
     public static final String TAG = "TagContactsFragment";
     private RecyclerView rvContacts;
-    private TextView txtNoResults;
     private ContactsRecyclerAdapter adapter;
     private ArrayList<Contact> contacts = new ArrayList<>();
     private Context context;
@@ -53,23 +51,18 @@ public class ContactsFragment extends Fragment implements InterfaceUtil.RowClick
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        adapter = new ContactsRecyclerAdapter(context,contacts,this);
+        adapter = new ContactsRecyclerAdapter(context,contacts);
+        adapter.setOnRowClickListener(this);
         Bundle args = getArguments();
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
         }
-
-        TableRow tr1 = new TableRow(context);
-        tr1.setLayoutParams(new TableRow.LayoutParams( TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        TextView textview = new TextView(context);
-        textview.setText("asdsad");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_contacts,container,false);
-        txtNoResults = (TextView) fragment.findViewById(R.id.txt_no_results);
         rvContacts = (RecyclerView) fragment.findViewById(R.id.rv_contacts);
         rvContacts.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -107,15 +100,8 @@ public class ContactsFragment extends Fragment implements InterfaceUtil.RowClick
             @Override
             public void onResponse(Call<ArrayList<Contact>> call, Response<ArrayList<Contact>> response) {
                 if(response.isSuccessful()){
-                    Log.d(TAG,response.raw().toString());
                     contacts.clear();
-                    if(response.body().size()<1){
-                        txtNoResults.setVisibility(View.VISIBLE);
-                    }
-                    else{
-                        txtNoResults.setVisibility(View.GONE);
-                        contacts.addAll(response.body());
-                    }
+                    contacts.addAll(response.body());
                     adapter.notifyDataSetChanged();
                 }
                 else{
@@ -137,5 +123,39 @@ public class ContactsFragment extends Fragment implements InterfaceUtil.RowClick
         intent.putExtra("user",currentUser);
         intent.putExtra("contact",serializable);
         startActivity(intent);
+    }
+
+    @Override
+    public void onClickDelete(final Contact contact, final int adapterPosition) {
+        InterfaceUtil.showYesNoDialog(context,
+                "Da li ste sigurni da hoćete da obrišete ovaj kontakt?",
+                "Da",
+                "Otkaži",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteContact(contact,adapterPosition);
+                    }
+                });
+    }
+
+    private void deleteContact(Contact contact, final int adapterPosition){
+        Call<Void> call = ApiClient.getApi().deleteContact(currentUser.getId(),contact.getUser().getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(context, "Kontakt je obrisan", Toast.LENGTH_SHORT).show();
+                    contacts.remove(adapterPosition);
+                    adapter.notifyItemRemoved(adapterPosition);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 }

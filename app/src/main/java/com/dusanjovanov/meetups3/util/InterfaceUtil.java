@@ -1,8 +1,13 @@
 package com.dusanjovanov.meetups3.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -27,7 +32,7 @@ public class InterfaceUtil {
 
     }
 
-    public interface RowClickListener{
+    public interface OnRowClickListener {
         void onRowClick(Serializable serializable);
     }
 
@@ -45,6 +50,49 @@ public class InterfaceUtil {
                 break;
         }
         return ResourcesCompat.getDrawable(context.getResources(),icon,null);
+    }
+
+    public static class HeaderHolder extends RecyclerView.ViewHolder{
+        private TextView txtHeader;
+
+        public HeaderHolder(View itemView) {
+            super(itemView);
+            txtHeader = (TextView) itemView.findViewById(R.id.txt_header);
+        }
+
+        public void bindHeader(String header) {
+            txtHeader.setText(header);
+        }
+    }
+
+    public static class NoResultsHolder extends RecyclerView.ViewHolder{
+        private TextView txtNoResults;
+
+        public NoResultsHolder(View itemView) {
+            super(itemView);
+            txtNoResults = (TextView) itemView.findViewById(R.id.txt_no_results);
+        }
+
+        public void bind(String text) {
+            txtNoResults.setText(text);
+        }
+    }
+
+    public static void showYesNoDialog(Context context,
+                                       String message,
+                                       String positive,
+                                       String negative,
+                                       DialogInterface.OnClickListener positiveListener){
+        new AlertDialog.Builder(context)
+                .setMessage(message)
+                .setPositiveButton(positive,positiveListener)
+                .setNegativeButton(negative, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
     }
 
 }

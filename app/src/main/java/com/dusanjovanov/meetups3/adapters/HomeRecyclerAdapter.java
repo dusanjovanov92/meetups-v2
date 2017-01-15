@@ -12,12 +12,14 @@ import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.models.ContactRequest;
+import com.dusanjovanov.meetups3.models.Group;
+import com.dusanjovanov.meetups3.models.GroupRequest;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -32,12 +34,14 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
 
     public static final String TAG = "HRecAdapter";
     private Context context;
-    private ArrayList<ContactRequest> contactRequests;
+    private List<ContactRequest> contactRequests;
+    private List<GroupRequest> groupRequests;
     private User currentUser;
 
-    public HomeRecyclerAdapter(Context context, ArrayList<ContactRequest> contactRequests, User currentUser) {
+    public HomeRecyclerAdapter(Context context, List<ContactRequest> contactRequests, List<GroupRequest> groupRequests, User currentUser) {
         this.context = context;
         this.contactRequests = contactRequests;
+        this.groupRequests = groupRequests;
         this.currentUser = currentUser;
     }
 
@@ -45,55 +49,70 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (viewType == R.id.header) {
-            return new HeaderHolder(inflater.inflate(R.layout.item_header, parent, false));
-        } else {
+            return new InterfaceUtil.HeaderHolder(inflater.inflate(R.layout.item_header, parent, false));
+        }
+        else if(viewType == R.id.no_results){
+            return new InterfaceUtil.NoResultsHolder(inflater.inflate(R.layout.item_no_results,parent,false));
+        }
+        else {
             return new RowHolder(inflater.inflate(R.layout.item_request, parent, false));
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof HeaderHolder) {
+        int contactRequestsSize = contactRequests.size();
+        int groupRequestsSize = groupRequests.size();
+
+        if (holder instanceof InterfaceUtil.HeaderHolder) {
             String header = null;
             if (position == 0) {
-                header = "Contact requests";
+                header = "Zahtevi za kontakt";
             }
-            ((HeaderHolder) holder).bindHeader(header);
-        } else {
-            if (contactRequests.size() != 0) {
-                ((RowHolder) holder).bindContactRequest(contactRequests.get(position - 1));
+            else{
+                header = "Zahtevi za učlanjenje u grupu";
             }
-
+            ((InterfaceUtil.HeaderHolder) holder).bindHeader(header);
+        }
+        else if(holder instanceof InterfaceUtil.NoResultsHolder){
+            if(position==1){
+                ((InterfaceUtil.NoResultsHolder)holder).bind("Nemate nijedan zahtev za kontakt trenutno");
+            }
+            else{
+                ((InterfaceUtil.NoResultsHolder)holder).bind("Nemate nijedan zahtev za učlanjenje u grupu trenutno");
+            }
+        }
+        else {
+            if(position>=1 && position<=contactRequestsSize){
+                ((RowHolder)holder).bindContactRequest(contactRequests.get(position-1));
+            }
+            else{
+                ((RowHolder)holder).bindGroupRequest(groupRequests.get(position-2-(contactRequestsSize==0?1:contactRequestsSize)));
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        return contactRequests.size() + 1;
+        int contactRequestsSize = contactRequests.size();
+        int groupRequestsSize = groupRequests.size();
+
+        return (contactRequestsSize ==0 ? 1: contactRequestsSize) + (groupRequestsSize ==0 ? 1 : groupRequestsSize) + 2;
     }
 
     @Override
     public int getItemViewType(int position) {
         int contactRequestsSize = contactRequests.size();
+        int groupRequestsSize = groupRequests.size();
 
-        if (position == 0 || position == contactRequestsSize + 1) {
+        if (position == 0 || position == (contactRequestsSize==0 ? 1: contactRequestsSize) + 1) {
             return R.id.header;
-        } else {
+        }
+        else if((position==1 && contactRequestsSize==0) || (position== (contactRequestsSize==0?1:contactRequestsSize)+2 && groupRequestsSize==0)){
+            return R.id.no_results;
+        }
+        else {
             return R.id.row;
-        }
-    }
-
-    private class HeaderHolder extends RecyclerView.ViewHolder {
-
-        private TextView txtHeader;
-
-        public HeaderHolder(View itemView) {
-            super(itemView);
-            txtHeader = (TextView) itemView.findViewById(R.id.txt_header);
-        }
-
-        void bindHeader(String header) {
-            txtHeader.setText(header);
         }
     }
 
@@ -130,6 +149,12 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
             txtDisplayName.setText(model.getUser().getDisplayName());
         }
 
+        void bindGroupRequest(GroupRequest model){
+            ivProfileImage.setImageDrawable(InterfaceUtil.getTextDrawable(model.getGroup().getName()));
+
+            txtDisplayName.setText(model.getGroup().getName());
+        }
+
 
         @Override
         public void onClick(View view) {
@@ -145,6 +170,7 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     private void acceptRequest(final int adapterPosition) {
+
         final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
         Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(), sendingUser.getId());
         call.enqueue(new Callback<Void>() {
@@ -168,25 +194,50 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
     }
 
     private void rejectRequest(final int adapterPosition) {
-        final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
-        Call<Void> call = ApiClient.getApi().deleteContactRequest(currentUser.getId(), sendingUser.getId());
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(context, "Zahtev je obrisan.", Toast.LENGTH_SHORT).show();
-                    contactRequests.remove(adapterPosition - 1);
-                    notifyItemRemoved(adapterPosition);
-                } else {
+        final int contactRequestsSize = contactRequests.size();
+
+        if(adapterPosition>contactRequests.size()){
+            Group group = groupRequests.get(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize)).getGroup();
+            Call<Void> call = ApiClient.getApi().deleteMemberRequest(group.getId(),currentUser.getId());
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if(response.isSuccessful()){
+                        Toast.makeText(context, "Zahtev je obrisan.", Toast.LENGTH_SHORT).show();
+                        groupRequests.remove(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize));
+                        notifyItemRemoved(adapterPosition);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
 
                 }
-            }
+            });
+        }
+        else{
+            final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
+            Call<Void> call = ApiClient.getApi().deleteContactRequest(currentUser.getId(), sendingUser.getId());
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(context, "Zahtev je obrisan.", Toast.LENGTH_SHORT).show();
+                        contactRequests.remove(adapterPosition - 1);
+                        notifyItemRemoved(adapterPosition);
+                    }
+                    else {
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+                    }
+                }
 
-            }
-        });
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+
+                }
+            });
+        }
+
     }
 
 

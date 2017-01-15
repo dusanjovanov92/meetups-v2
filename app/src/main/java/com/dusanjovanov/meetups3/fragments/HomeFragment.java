@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,17 @@ import android.widget.TextView;
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.HomeRecyclerAdapter;
 import com.dusanjovanov.meetups3.models.ContactRequest;
+import com.dusanjovanov.meetups3.models.GroupRequest;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.rest.CustomDeserializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,7 +40,8 @@ public class HomeFragment extends Fragment {
     private TextView txtContactRequestsNum;
     private RecyclerView rvHome;
     private HomeRecyclerAdapter adapter;
-    private ArrayList<ContactRequest> contactRequests = new ArrayList<>();
+    private List<ContactRequest> contactRequests = new ArrayList<>();
+    private List<GroupRequest> groupRequests = new ArrayList<>();
     private User currentUser;
     private Context context;
     private boolean refreshDisplay = false;
@@ -50,7 +57,7 @@ public class HomeFragment extends Fragment {
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
         }
-        adapter = new HomeRecyclerAdapter(context,contactRequests,currentUser);
+        adapter = new HomeRecyclerAdapter(context,contactRequests,groupRequests,currentUser);
     }
 
     @Nullable
@@ -68,7 +75,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getContactRequests();
+        getRequests();
     }
 
     @Override
@@ -81,37 +88,45 @@ public class HomeFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if(isVisibleToUser){
             if(refreshDisplay){
-                getContactRequests();
+                getRequests();
             }
         }
     }
 
-    private void getContactRequests(){
-        Call<ArrayList<ContactRequest>> call = ApiClient.getApi().getContactRequests(currentUser.getId());
-        call.enqueue(new Callback<ArrayList<ContactRequest>>() {
+    private void getRequests(){
+        Call<String> call = ApiClient.getApi().getRequests(currentUser.getId());
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<ArrayList<ContactRequest>> call, Response<ArrayList<ContactRequest>> response) {
+            public void onResponse(Call<String> call, Response<String> response) {
                 if(response.isSuccessful()){
-                    Log.d(TAG,response.raw().toString());
-                    Log.d(TAG,String.valueOf(response.body().size()));
+                    Type typeCR = new TypeToken<ArrayList<ContactRequest>>(){}.getType();
+                    Type typeGR = new TypeToken<ArrayList<GroupRequest>>(){}.getType();
+
+                    Gson gson = new GsonBuilder()
+                            .registerTypeAdapter(typeCR,new CustomDeserializer<>("contactRequests"))
+                            .registerTypeAdapter(typeGR,new CustomDeserializer<>("groupRequests"))
+                            .create();
+
+                    List<ContactRequest> contactRequestsGson = gson.fromJson(response.body(),typeCR);
+                    List<GroupRequest> groupRequestsGson = gson.fromJson(response.body(),typeGR);
+
                     contactRequests.clear();
-                    int responseSize = response.body().size();
-                    txtContactRequestsNum.setText(String.valueOf(responseSize));
-                    contactRequests.addAll(response.body());
+                    contactRequests.addAll(contactRequestsGson);
+                    groupRequests.clear();
+                    groupRequests.addAll(groupRequestsGson);
                     adapter.notifyDataSetChanged();
-
+                    txtContactRequestsNum.setText(String.valueOf(contactRequests.size()));
                 }
-                else{
 
-                }
             }
 
             @Override
-            public void onFailure(Call<ArrayList<ContactRequest>> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
 
             }
         });
     }
+
 
 
 

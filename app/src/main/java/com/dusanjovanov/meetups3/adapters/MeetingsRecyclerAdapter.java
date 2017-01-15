@@ -25,14 +25,14 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
     private Context context;
     private ArrayList<Meeting> meetings;
     private LayoutInflater layoutInflater;
-    private InterfaceUtil.RowClickListener rowClickListener;
+    private InterfaceUtil.OnRowClickListener listener;
 
 
-    public MeetingsRecyclerAdapter(Context context, ArrayList<Meeting> meetings,InterfaceUtil.RowClickListener rowClickListener) {
+    public MeetingsRecyclerAdapter(Context context, ArrayList<Meeting> meetings,InterfaceUtil.OnRowClickListener listener) {
         this.context = context;
         this.meetings = meetings;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.rowClickListener = rowClickListener;
+        this.listener = listener;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
 
         @Override
         public void onClick(View view) {
-            rowClickListener.onRowClick(meetings.get(getAdapterPosition()));
+            listener.onRowClick(meetings.get(getAdapterPosition()));
         }
     }
 }

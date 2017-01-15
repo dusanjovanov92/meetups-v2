@@ -1,7 +1,6 @@
 package com.dusanjovanov.meetups3.rest;
 
 import com.dusanjovanov.meetups3.models.Contact;
-import com.dusanjovanov.meetups3.models.ContactRequest;
 import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.MeetingResponse;
 import com.dusanjovanov.meetups3.models.User;
@@ -41,14 +40,17 @@ public interface MeetupsApi {
     @GET("users/{id_user}/contacts")
     Call<ArrayList<Contact>> getContacts(@Path("id_user") int idUser);
 
-    @GET("users/{id_user}/contactRequests")
-    Call<ArrayList<ContactRequest>> getContactRequests(@Path("id_user") int idUser);
+    @GET("users/{id_user}/requests")
+    Call<String> getRequests(@Path("id_user") int idUser);
 
     @POST("users/{id_user1}/contacts/{id_user2}")
     Call<Void> addToContacts(@Path("id_user1")int receivingUser, @Path("id_user2") int sendingUser);
 
     @DELETE("users/{id_user1}/contactRequests/{id_user2}")
     Call<Void> deleteContactRequest(@Path("id_user1") int receivingUser, @Path("id_user2") int sendingUser);
+
+    @DELETE("groups/{id_group}/memberRequests/{id_user}")
+    Call<Void> deleteMemberRequest(@Path("id_group") int idGroup, @Path("id_user") int idUser);
 
     @GET("groups/{id_group}/meetings")
     Call<String> getGroupMeetings(@Path("id_group") int idGroup);
@@ -58,5 +60,8 @@ public interface MeetupsApi {
 
     @GET("meetings/{id_meeting}/responses")
     Call<List<MeetingResponse>> getMeetingResponses(@Path("id_meeting") int idMeeting);
+
+    @DELETE("users/{id_user1}/contacts/{id_user2}")
+    Call<Void> deleteContact(@Path("id_user1") int idUser1, @Path("id_user2") int idUser2);
 
 }

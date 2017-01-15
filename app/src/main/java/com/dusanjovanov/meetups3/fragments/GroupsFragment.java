@@ -31,7 +31,7 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class GroupsFragment extends Fragment implements InterfaceUtil.RowClickListener{
+public class GroupsFragment extends Fragment implements InterfaceUtil.OnRowClickListener {
 
     public static final String TAG = "TagGroupsFragment";
     private RecyclerView rvGroups;

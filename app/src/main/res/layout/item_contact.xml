@@ -1,35 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
     android:paddingTop="5dp">
 
+    <include layout="@layout/template_user" />
+
     <ImageView
-        android:id="@+id/iv_profile_image"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:src="@drawable/ic_launcher" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/civ_profile_image"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:src="@drawable/ic_launcher"
-        android:visibility="gone"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="1dp" />
-
-    <TextView
-        android:id="@+id/txt_display_name"
+        android:id="@+id/iv_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:paddingLeft="10dp"
-        android:paddingStart="10dp"
-        android:text="Dusan Jovanov"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:layout_weight="1"/>
+        android:src="@drawable/ic_delete_grey_900_24dp"
+        android:layout_gravity="center_vertical"/>
 </LinearLayout>

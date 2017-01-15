@@ -20,14 +20,17 @@ import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.rest.CustomDeserializer;
 import com.dusanjovanov.meetups3.util.ConstantsUtil;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +40,7 @@ import retrofit2.Response;
  * Created by duca on 10/1/2017.
  */
 
-public class GroupMeetingsFragment extends Fragment implements InterfaceUtil.RowClickListener{
+public class GroupMeetingsFragment extends Fragment implements InterfaceUtil.OnRowClickListener {
 
     public static final String TAG = "GMFrag";
     private Group group;
@@ -100,16 +103,15 @@ public class GroupMeetingsFragment extends Fragment implements InterfaceUtil.Row
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Gson gson = new Gson();
                 Type type = new TypeToken<ArrayList<Meeting>>(){}.getType();
-                ArrayList<Meeting> meetings = gson.fromJson(response.body(),type);
-                GroupMeetingsFragment.this.meetings.clear();
-                if(meetings.size()==0){
 
-                }
-                else{
-                    GroupMeetingsFragment.this.meetings.addAll(meetings);
-                }
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(type,new CustomDeserializer<>())
+                        .create();
+
+                List<Meeting> meetings = gson.fromJson(response.body(),type);
+                GroupMeetingsFragment.this.meetings.clear();
+                GroupMeetingsFragment.this.meetings.addAll(meetings);
                 adapter.notifyDataSetChanged();
             }
 
