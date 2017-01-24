@@ -39,6 +39,10 @@ public class MeetingResponsesRecyclerAdapter extends RecyclerView.Adapter<Recycl
             View row = inflater.inflate(R.layout.item_header,parent,false);
             return new HeaderHolder(row);
         }
+        else if(viewType==R.id.no_results){
+            View row = inflater.inflate(R.layout.item_no_results,parent,false);
+            return new InterfaceUtil.NoResultsHolder(row);
+        }
         else{
             View row = inflater.inflate(R.layout.item_meeting_response,parent,false);
             return new RowHolder(row);
@@ -50,6 +54,9 @@ public class MeetingResponsesRecyclerAdapter extends RecyclerView.Adapter<Recycl
         if(holder instanceof HeaderHolder){
             ((HeaderHolder)holder).bindModel("Odgovori članova");
         }
+        else if(holder instanceof InterfaceUtil.NoResultsHolder){
+            ((InterfaceUtil.NoResultsHolder)holder).bind("Nijedan član nije odgovorio.");
+        }
         else{
             ((RowHolder)holder).bindModel(meetingResponses.get(position-1));
         }
@@ -57,13 +64,16 @@ public class MeetingResponsesRecyclerAdapter extends RecyclerView.Adapter<Recycl
 
     @Override
     public int getItemCount() {
-        return meetingResponses.size()+1;
+        return meetingResponses.size()==0? 2 : meetingResponses.size()+1;
     }
 
     @Override
     public int getItemViewType(int position) {
         if(position==0){
             return R.id.header;
+        }
+        else if(position==1 & meetingResponses.size()==0){
+            return R.id.no_results;
         }
         else{
             return R.id.row;

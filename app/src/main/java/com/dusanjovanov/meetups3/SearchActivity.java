@@ -1,5 +1,6 @@
 package com.dusanjovanov.meetups3;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,27 +15,36 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.dusanjovanov.meetups3.adapters.UsersRecyclerAdapter;
+import com.dusanjovanov.meetups3.dialogs.UserProfileDialog;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.dusanjovanov.meetups3.util.NetworkUtil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class SearchActivity extends AppCompatActivity {
+import static com.dusanjovanov.meetups3.util.ConstantsUtil.EXTRA_ACTION;
+import static com.dusanjovanov.meetups3.util.ConstantsUtil.EXTRA_CURRENT_USER;
+
+public class SearchActivity extends AppCompatActivity implements InterfaceUtil.OnRowClickListener{
 
     public static final String TAG = "tagSearchActivity";
 
     private ArrayList<User> users = new ArrayList<>();
     private UsersRecyclerAdapter adapter;
     private TextView txtNoResults;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        handleIntent();
 
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
@@ -62,10 +72,23 @@ public class SearchActivity extends AppCompatActivity {
 
         RecyclerView rvSearchResults = (RecyclerView) findViewById(R.id.rv_search_results);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new UsersRecyclerAdapter(this,users);
+        adapter = new UsersRecyclerAdapter(this,users,this);
         rvSearchResults.setAdapter(adapter);
         txtNoResults = (TextView) findViewById(R.id.txt_no_results);
 
+    }
+
+    private void handleIntent(){
+        Intent intent = getIntent();
+        String action = null;
+        if(intent!=null){
+            action = intent.getStringExtra(EXTRA_ACTION);
+        }
+        if(action!=null){
+            if(action.equals(MainScreenActivity.TAG)){
+                currentUser = (User) intent.getSerializableExtra(EXTRA_CURRENT_USER);
+            }
+        }
     }
 
     private void search(String query) {
@@ -114,5 +137,11 @@ public class SearchActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRowClick(Serializable serializable) {
+        UserProfileDialog dialog = UserProfileDialog.getInstance(currentUser, (User) serializable);
+        dialog.show(getSupportFragmentManager(),"user_profile");
     }
 }

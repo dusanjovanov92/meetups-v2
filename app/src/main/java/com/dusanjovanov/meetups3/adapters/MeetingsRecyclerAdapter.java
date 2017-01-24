@@ -57,7 +57,7 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
         TextView txtTime;
         ImageView ivIcon;
 
-        public RowHolder(View itemView) {
+        RowHolder(View itemView) {
             super(itemView);
             txtLabel = (TextView) itemView.findViewById(R.id.txt_label);
             txtTime = (TextView) itemView.findViewById(R.id.txt_time);
@@ -67,27 +67,16 @@ public class MeetingsRecyclerAdapter extends RecyclerView.Adapter<MeetingsRecycl
 
         void bindModel(Meeting model){
             txtLabel.setText(model.getLabel());
-            txtTime.setText(new DateTimeUtil(context).getMeetingTime(model.getStartTime()));
-            int icon = R.drawable.ic_event_black_36dp;
+            txtTime.setText(DateTimeUtil.getMeetingDateTime(model.getStartTime(),context));
+            int icon;
 
-            switch (DateTimeUtil.getProximity(model.getStartTime()*1000)){
-                case DateTimeUtil.THIS_HOUR_BEFORE:
-                case DateTimeUtil.TODAY_BEFORE:
-                case DateTimeUtil.YESTERDAY:
-                case DateTimeUtil.LAST_WEEK:
-                case DateTimeUtil.BEFORE:
-                    icon = R.drawable.ic_event_green_36dp;
-                    break;
-                case DateTimeUtil.THIS_HOUR_AFTER:
-                case DateTimeUtil.TODAY_AFTER:
-                case DateTimeUtil.TOMORROW:
-                    icon = R.drawable.ic_event_blue_36dp;
-                    break;
-                case DateTimeUtil.THIS_WEEK:
-                case DateTimeUtil.FAR:
-                    icon = R.drawable.ic_event_black_36dp;
-                    break;
+            if(System.currentTimeMillis()>model.getStartTime()*1000){
+                icon = R.drawable.ic_event_green_36dp;
             }
+            else{
+                icon = R.drawable.ic_event_black_36dp;
+            }
+
             ivIcon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),icon,null));
         }
 

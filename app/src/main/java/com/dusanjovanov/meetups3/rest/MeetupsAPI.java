@@ -43,14 +43,24 @@ public interface MeetupsApi {
     @GET("users/{id_user}/requests")
     Call<String> getRequests(@Path("id_user") int idUser);
 
+    @FormUrlEncoded
     @POST("users/{id_user1}/contacts/{id_user2}")
-    Call<Void> addToContacts(@Path("id_user1")int receivingUser, @Path("id_user2") int sendingUser);
+    Call<Void> addToContacts(@Path("id_user1")int receivingUser, @Path("id_user2") int sendingUser,
+                             @Field("firebase_node") String firebaseNode);
 
-    @DELETE("users/{id_user1}/contactRequests/{id_user2}")
-    Call<Void> deleteContactRequest(@Path("id_user1") int receivingUser, @Path("id_user2") int sendingUser);
+    @DELETE("users/{id_user1}/contacts/{id_user2}")
+    Call<Void> deleteContact(@Path("id_user1") int idUser1, @Path("id_user2") int idUser2);
 
-    @DELETE("groups/{id_group}/memberRequests/{id_user}")
-    Call<Void> deleteMemberRequest(@Path("id_group") int idGroup, @Path("id_user") int idUser);
+    @GET("users/{id_user1}/relationship/{id_user2}")
+    Call<String> getRelationship(@Path("id_user1")int idUser1,@Path("id_user2") int idUser2);
+
+    @POST("users/{id_user1}/contactRequests/{id_user2}")
+    Call<Void> sendContactRequest(@Path("id_user1") int idUser1, @Path("id_user2") int idUser2);
+
+    @FormUrlEncoded
+    @POST("groups")
+    Call<Void> createGroup(@Field("name") String name,
+                           @Field("admin") int admin);
 
     @GET("groups/{id_group}/meetings")
     Call<String> getGroupMeetings(@Path("id_group") int idGroup);
@@ -58,13 +68,15 @@ public interface MeetupsApi {
     @GET("groups/{id_group}")
     Call<Group> getGroup(@Path("id_group") int idGroup);
 
-    @GET("meetings/{id_meeting}/responses")
-    Call<List<MeetingResponse>> getMeetingResponses(@Path("id_meeting") int idMeeting);
-
-    @DELETE("users/{id_user1}/contacts/{id_user2}")
-    Call<Void> deleteContact(@Path("id_user1") int idUser1, @Path("id_user2") int idUser2);
-
     @POST("groups/{id_group}/memberRequests/{id_user}")
     Call<Void> addMember(@Path("id_group") int idGroup,@Path("id_user") int idUser);
 
+    @GET("meetings/{id_meeting}/responses")
+    Call<List<MeetingResponse>> getMeetingResponses(@Path("id_meeting") int idMeeting);
+
+    @DELETE("users/{id_user1}/contactRequests/{id_user2}")
+    Call<Void> deleteContactRequest(@Path("id_user1") int idUser1,@Path("id_user2")int idUser2);
+
+    @DELETE("memberRequests/{id_request}")
+    Call<Void> deleteMemberRequest(@Path("id_request")int idRequest);
 }

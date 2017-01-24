@@ -10,14 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.adapters.HomeRecyclerAdapter;
+import com.dusanjovanov.meetups3.models.ChatMessage;
 import com.dusanjovanov.meetups3.models.ContactRequest;
 import com.dusanjovanov.meetups3.models.GroupRequest;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.rest.CustomDeserializer;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -34,7 +38,7 @@ import retrofit2.Response;
  * Created by duca on 30/12/2016.
  */
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowClickListener{
 
     private static final String TAG = "TagHomeFragment";
     private TextView txtContactRequestsNum;
@@ -45,6 +49,7 @@ public class HomeFragment extends Fragment {
     private User currentUser;
     private Context context;
     private boolean refreshDisplay = false;
+    private DatabaseReference dbRef;
 
     public HomeFragment() {
     }
@@ -57,7 +62,8 @@ public class HomeFragment extends Fragment {
         if(args!=null){
             currentUser = (User) args.getSerializable("user");
         }
-        adapter = new HomeRecyclerAdapter(context,contactRequests,groupRequests,currentUser);
+        adapter = new HomeRecyclerAdapter(context,contactRequests,groupRequests,this);
+        dbRef = FirebaseDatabase.getInstance().getReference();
     }
 
     @Nullable
@@ -128,6 +134,44 @@ public class HomeFragment extends Fragment {
     }
 
 
+    @Override
+    public void onContactRequestAcceptClick(final ContactRequest request, final int adapterPosition) {
+        ChatMessage message = new ChatMessage("a","a","a",1);
+        String firebaseNode = dbRef.child("chat").push().getKey();
+        dbRef.child("chat").child(firebaseNode).push().setValue(message);
 
+        Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(),request.getUser().getId(),firebaseNode);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(context, "Korisnik "+request.getUser().getDisplayName()+ " je dodat u kontakte",
+                            Toast.LENGTH_SHORT).show();
+                    contactRequests.remove(adapterPosition-1);
+                    adapter.notifyItemRemoved(adapterPosition);
+                    adapter.notifyDataSetChanged();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onContactRequestRejectClick(ContactRequest request,int adapterPosition) {
+        //TODO Ovde si stao
+    }
+
+    @Override
+    public void onGroupRequestAcceptClick(GroupRequest request,int adapterPosition) {
+
+    }
+
+    @Override
+    public void onGroupRequestRejectClick(GroupRequest request,int adapterPosition) {
+
+    }
 }

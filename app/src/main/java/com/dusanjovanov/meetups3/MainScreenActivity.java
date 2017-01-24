@@ -26,6 +26,9 @@ import com.dusanjovanov.meetups3.fragments.ProfileFragment;
 import com.dusanjovanov.meetups3.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 
+import static com.dusanjovanov.meetups3.util.ConstantsUtil.EXTRA_ACTION;
+import static com.dusanjovanov.meetups3.util.ConstantsUtil.EXTRA_CURRENT_USER;
+
 public class MainScreenActivity extends AppCompatActivity {
 
     public static final String TAG = "TagMainScreen";
@@ -68,7 +71,10 @@ public class MainScreenActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if(hasFocus){
-                    startActivity(new Intent(MainScreenActivity.this,SearchActivity.class));
+                    Intent intent = new Intent(MainScreenActivity.this,SearchActivity.class);
+                    intent.putExtra(EXTRA_CURRENT_USER,currentUser);
+                    intent.putExtra(EXTRA_ACTION,TAG);
+                    startActivity(intent);
                 }
                 else{
 

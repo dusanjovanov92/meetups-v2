@@ -15,7 +15,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  */
 
 public class ApiClient {
-    public static final String BASE_URL = "http://192.168.1.4/api/v1/";
+    public static final String BASE_URL = "http://192.168.1.7/api2/src/public/";
 
     private static final OkHttpClient client = new OkHttpClient.Builder()
             .addInterceptor(new Interceptor() {
@@ -24,7 +24,7 @@ public class ApiClient {
                     Request original = chain.request();
 
                     Request request = original.newBuilder()
-                            .header("authorization", "801bb1e7ebfc127b17fb1330335701c2")
+                            .header("authorization", "duca")
                             .header("Content-Type", "application/x-www-form-urlencoded")
                             .method(original.method(), original.body())
                             .build();

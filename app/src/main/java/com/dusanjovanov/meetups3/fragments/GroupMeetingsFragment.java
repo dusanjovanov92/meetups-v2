@@ -116,7 +116,7 @@ public class GroupMeetingsFragment extends Fragment implements InterfaceUtil.OnR
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+             public void onFailure(Call<String> call, Throwable t) {
 
             }
         });

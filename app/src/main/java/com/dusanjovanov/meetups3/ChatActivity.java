@@ -41,7 +41,6 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayoutManager layoutManager;
     private EditText edtMessage;
     private Button btnSend;
-    private DateTimeUtil dateTimeUtil = new DateTimeUtil(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +155,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 viewHolder.txtDisplayName.setText(model.getDisplayName());
                 viewHolder.txtMessage.setText(model.getMessage());
-                viewHolder.txtTime.setText(dateTimeUtil.getChatTime(model.getTime()));
+                viewHolder.txtTime.setText(DateTimeUtil.getChatDateTime(model.getTime(),ChatActivity.this));
             }
         };
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {

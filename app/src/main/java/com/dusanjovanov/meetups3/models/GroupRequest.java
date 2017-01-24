@@ -5,7 +5,16 @@ package com.dusanjovanov.meetups3.models;
  */
 
 public class GroupRequest {
+    private int id;
     private Group group;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Group getGroup() {
         return group;

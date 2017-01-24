@@ -100,7 +100,7 @@ public class MeetingActivity extends AppCompatActivity {
     }
 
     private void setupViews(){
-        txtStartsIn.setText(new DateTimeUtil(this).getMeetingTime(meeting.getStartTime()));
+        txtStartsIn.setText(DateTimeUtil.getMeetingDateTime(meeting.getStartTime(),this));
         ivResponseIcon.setImageDrawable(InterfaceUtil.getMeetingResponseIcon(yourResponse==null ? 0 : yourResponse.getResponse(),this));
         llResponse.setOnClickListener(new View.OnClickListener() {
             @Override

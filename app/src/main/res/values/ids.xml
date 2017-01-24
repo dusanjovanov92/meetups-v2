@@ -3,4 +3,5 @@
     <item type="id" name="header"/>
     <item type="id" name="no_results"/>
     <item type="id" name="row"/>
+    <item type="id" name="edt"/>
 </resources>

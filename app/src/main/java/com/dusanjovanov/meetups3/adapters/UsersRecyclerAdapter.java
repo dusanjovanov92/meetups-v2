@@ -24,10 +24,12 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
 
     private AppCompatActivity activity;
     private ArrayList<User> users;
+    private InterfaceUtil.OnRowClickListener listener;
 
-    public UsersRecyclerAdapter(AppCompatActivity activity,ArrayList<User> users) {
+    public UsersRecyclerAdapter(AppCompatActivity activity,ArrayList<User> users,InterfaceUtil.OnRowClickListener listener) {
         this.activity = activity;
         this.users = users;
+        this.listener = listener;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         return users.size();
     }
 
-    class UserViewHolder extends RecyclerView.ViewHolder{
+    class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView ivProfileImage;
         private CircleImageView civProfileImage;
@@ -56,6 +58,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
             this.ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
             this.civProfileImage = (CircleImageView) itemView.findViewById(R.id.civ_profile_image);
             this.txtDisplayName = (TextView) itemView.findViewById(R.id.txt_display_name);
+            itemView.setOnClickListener(this);
         }
 
         void bindModel(User user){
@@ -69,6 +72,11 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
             }
 
             txtDisplayName.setText(user.getDisplayName());
+        }
+
+        @Override
+        public void onClick(View view) {
+            listener.onRowClick(users.get(getAdapterPosition()));
         }
     }
 }

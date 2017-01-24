@@ -8,23 +8,16 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.R;
 import com.dusanjovanov.meetups3.models.ContactRequest;
-import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.GroupRequest;
-import com.dusanjovanov.meetups3.models.User;
-import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by duca on 6/1/2017.
@@ -36,13 +29,21 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
     private Context context;
     private List<ContactRequest> contactRequests;
     private List<GroupRequest> groupRequests;
-    private User currentUser;
+    private OnRowClickListener listener;
 
-    public HomeRecyclerAdapter(Context context, List<ContactRequest> contactRequests, List<GroupRequest> groupRequests, User currentUser) {
+    public interface OnRowClickListener{
+        void onContactRequestAcceptClick(ContactRequest request,int adapterPosition);
+        void onContactRequestRejectClick(ContactRequest request,int adapterPosition);
+        void onGroupRequestAcceptClick(GroupRequest request,int adapterPosition);
+        void onGroupRequestRejectClick(GroupRequest request,int adapterPosition);
+    }
+
+    public HomeRecyclerAdapter(Context context, List<ContactRequest> contactRequests, List<GroupRequest> groupRequests,
+                               HomeRecyclerAdapter.OnRowClickListener listener) {
         this.context = context;
         this.contactRequests = contactRequests;
         this.groupRequests = groupRequests;
-        this.currentUser = currentUser;
+        this.listener = listener;
     }
 
     @Override
@@ -124,7 +125,7 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
         private ImageButton btnAccept, btnReject;
 
 
-        public RowHolder(View itemView) {
+        RowHolder(View itemView) {
             super(itemView);
             ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
             civProfileImage = (CircleImageView) itemView.findViewById(R.id.civ_profile_image);
@@ -158,109 +159,30 @@ public class HomeRecyclerAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
+            final int contactRequestsSize = contactRequests.size();
             switch (view.getId()) {
                 case R.id.btn_accept:
-                    acceptRequest(getAdapterPosition());
+                    if(getAdapterPosition()>contactRequests.size()){
+                        GroupRequest request = groupRequests.get(getAdapterPosition()-2-(contactRequestsSize==0?1:contactRequestsSize));
+                        listener.onGroupRequestAcceptClick(request,getAdapterPosition());
+                    }
+                    else{
+                        ContactRequest request = contactRequests.get(getAdapterPosition() - 1);
+                        listener.onContactRequestAcceptClick(request,getAdapterPosition());
+                    }
                     break;
                 case R.id.btn_reject:
-                    rejectRequest(getAdapterPosition());
+                    if(getAdapterPosition()>contactRequests.size()) {
+                        GroupRequest request = groupRequests.get(getAdapterPosition()-2-(contactRequestsSize==0?1:contactRequestsSize));
+                        listener.onGroupRequestRejectClick(request,getAdapterPosition());
+                    }
+                    else{
+                        ContactRequest request = contactRequests.get(getAdapterPosition() - 1);
+                        listener.onContactRequestRejectClick(request,getAdapterPosition());
+                    }
                     break;
             }
         }
     }
-
-    private void acceptRequest(final int adapterPosition) {
-        final int contactRequestsSize = contactRequests.size();
-
-        if(adapterPosition>contactRequests.size()){
-            final Group group = groupRequests.get(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize)).getGroup();
-            Call<Void> call = ApiClient.getApi().addMember(group.getId(),currentUser.getId());
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if(response.isSuccessful()){
-                        Toast.makeText(context, "Postali ste član grupe "+ group.getName(), Toast.LENGTH_SHORT).show();
-                        groupRequests.remove(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize));
-                        notifyItemRemoved(adapterPosition);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-
-                }
-            });
-        }
-        else{
-            final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
-            Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(), sendingUser.getId());
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(context, "Korisnik " + sendingUser.getDisplayName() + " je dodat u kontakte.", Toast.LENGTH_SHORT).show();
-                        contactRequests.remove(adapterPosition - 1);
-                        notifyItemRemoved(adapterPosition);
-                        notifyDataSetChanged();
-                    } else {
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-
-                }
-            });
-        }
-    }
-
-    private void rejectRequest(final int adapterPosition) {
-        final int contactRequestsSize = contactRequests.size();
-
-        if(adapterPosition>contactRequests.size()){
-            Group group = groupRequests.get(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize)).getGroup();
-            Call<Void> call = ApiClient.getApi().deleteMemberRequest(group.getId(),currentUser.getId());
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if(response.isSuccessful()){
-                        Toast.makeText(context, "Zahtev je obrisan.", Toast.LENGTH_SHORT).show();
-                        groupRequests.remove(adapterPosition-2-(contactRequestsSize==0?1:contactRequestsSize));
-                        notifyItemRemoved(adapterPosition);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-
-                }
-            });
-        }
-        else{
-            final User sendingUser = contactRequests.get(adapterPosition - 1).getUser();
-            Call<Void> call = ApiClient.getApi().deleteContactRequest(currentUser.getId(), sendingUser.getId());
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(context, "Zahtev je obrisan.", Toast.LENGTH_SHORT).show();
-                        contactRequests.remove(adapterPosition - 1);
-                        notifyItemRemoved(adapterPosition);
-                    }
-                    else {
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-
-                }
-            });
-        }
-
-    }
-
 
 }
