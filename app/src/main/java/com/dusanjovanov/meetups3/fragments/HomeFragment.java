@@ -161,17 +161,65 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
     }
 
     @Override
-    public void onContactRequestRejectClick(ContactRequest request,int adapterPosition) {
-        //TODO Ovde si stao
+    public void onContactRequestRejectClick(ContactRequest request, final int adapterPosition) {
+        Call<Void> call = ApiClient.getApi().deleteContactRequest(currentUser.getId(),request.getUser().getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(context, "Zahtev je obrisan", Toast.LENGTH_SHORT).show();
+                    contactRequests.remove(adapterPosition-1);
+                    adapter.notifyItemRemoved(adapterPosition);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
-    public void onGroupRequestAcceptClick(GroupRequest request,int adapterPosition) {
+    public void onGroupRequestAcceptClick(final GroupRequest request, final int adapterPosition) {
+        Call<Void> call = ApiClient.getApi().addMember(request.getGroup().getId(),currentUser.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(context, "Postali ste član grupe "+request.getGroup().getName(), Toast.LENGTH_SHORT).show();
+                    groupRequests.remove(adapterPosition-2-(contactRequests.size()==0?1:contactRequests.size()));
+                    adapter.notifyItemRemoved(adapterPosition);
+                    adapter.notifyDataSetChanged();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
-    public void onGroupRequestRejectClick(GroupRequest request,int adapterPosition) {
+    public void onGroupRequestRejectClick(GroupRequest request, final int adapterPosition) {
+        Call<Void> call = ApiClient.getApi().deleteMemberRequest(request.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(context, "Zahtev je obrisan", Toast.LENGTH_SHORT).show();
+                    groupRequests.remove(adapterPosition-2-(contactRequests.size()==0?1:contactRequests.size()));
+                    adapter.notifyItemRemoved(adapterPosition);
+                    adapter.notifyDataSetChanged();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 }
