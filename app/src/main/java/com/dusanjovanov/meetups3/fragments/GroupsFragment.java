@@ -66,7 +66,7 @@ public class GroupsFragment extends Fragment implements InterfaceUtil.OnRowClick
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_groups,container,false);
         rvGroups = (RecyclerView) fragment.findViewById(R.id.rv_groups);
         rvGroups.setAdapter(adapter);

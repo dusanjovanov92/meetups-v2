@@ -69,7 +69,13 @@ public interface MeetupsApi {
     Call<Group> getGroup(@Path("id_group") int idGroup);
 
     @POST("groups/{id_group}/memberRequests/{id_user}")
-    Call<Void> addMember(@Path("id_group") int idGroup,@Path("id_user") int idUser);
+    Call<Integer> sendMemberRequest(@Path("id_group") int idGroup, @Path("id_user") int idUser);
+
+    @POST("groups/{id_group}/addMember/{id_user}")
+    Call<Void> addMember(@Path("id_group") int idGroup, @Path("id_user") int idUser);
+
+    @DELETE("groups/{id_group}")
+    Call<Void> deleteGroup(@Path("id_group") int idGroup);
 
     @GET("meetings/{id_meeting}/responses")
     Call<List<MeetingResponse>> getMeetingResponses(@Path("id_meeting") int idMeeting);
