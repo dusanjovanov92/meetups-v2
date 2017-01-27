@@ -43,8 +43,6 @@
         android:id="@+id/rv_members"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/ll_info"
-        android:paddingLeft="@dimen/list_padding_side"
-        android:paddingRight="@dimen/list_padding_side"/>
+        android:layout_below="@id/ll_info"/>
 
 </RelativeLayout>

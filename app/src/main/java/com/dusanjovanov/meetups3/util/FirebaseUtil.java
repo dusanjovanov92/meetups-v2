@@ -6,6 +6,8 @@ import android.support.v7.app.AlertDialog;
 import com.dusanjovanov.meetups3.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by duca on 21/12/2016.
@@ -23,5 +25,10 @@ public class FirebaseUtil {
                 .setMessage(R.string.google_play_error)
                 .setIcon(R.drawable.ic_error_black_24dp)
                 .show();
+    }
+
+    public static void deleteFirebaseNode(String type,String firebaseNode){
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        dbRef.child(type).child(firebaseNode).removeValue();
     }
 }

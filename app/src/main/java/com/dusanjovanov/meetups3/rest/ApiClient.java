@@ -15,7 +15,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  */
 
 public class ApiClient {
-    public static final String BASE_URL = "http://192.168.1.7/api2/src/public/";
+    public static final String BASE_URL = "http://192.168.1.13/api2/src/public/";
 
     private static final OkHttpClient client = new OkHttpClient.Builder()
             .addInterceptor(new Interceptor() {

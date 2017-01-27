@@ -143,7 +143,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(MessageViewHolder viewHolder, ChatMessage model, int position) {
                 progressBar.setVisibility(View.INVISIBLE);
-
+                if(position==0){
+                    viewHolder.itemView.setVisibility(View.GONE);
+                }
                 if(model.getPhotoUrl()==null){
                     viewHolder.ivProfileImage.setImageDrawable(InterfaceUtil.getTextDrawable(model.getDisplayName()));
                 }

@@ -21,6 +21,7 @@ import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
 import com.dusanjovanov.meetups3.models.Contact;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
+import com.dusanjovanov.meetups3.util.FirebaseUtil;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 
 import java.io.Serializable;
@@ -139,7 +140,7 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
                 });
     }
 
-    private void deleteContact(Contact contact, final int adapterPosition){
+    private void deleteContact(final Contact contact, final int adapterPosition){
         Call<Void> call = ApiClient.getApi().deleteContact(currentUser.getId(),contact.getUser().getId());
         call.enqueue(new Callback<Void>() {
             @Override
@@ -149,6 +150,7 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
                     contacts.remove(adapterPosition);
                     adapter.notifyItemRemoved(adapterPosition);
                     adapter.notifyDataSetChanged();
+                    FirebaseUtil.deleteFirebaseNode("chat",contact.getFirebaseNode());
                 }
             }
 
@@ -157,5 +159,6 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
 
             }
         });
+
     }
 }
