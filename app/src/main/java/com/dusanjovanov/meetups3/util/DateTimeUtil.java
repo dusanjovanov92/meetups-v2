@@ -29,7 +29,7 @@ public class DateTimeUtil {
     }
 
     public static String getChatDateTime(long timestamp,Context context){
-        Date date = new Date(timestamp*1000);
+        Date date = new Date(timestamp);
 
         DateFormat dfDate = android.text.format.DateFormat.getMediumDateFormat(context);
         DateFormat dfTime = android.text.format.DateFormat.getTimeFormat(context);

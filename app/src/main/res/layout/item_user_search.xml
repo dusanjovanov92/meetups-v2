@@ -6,7 +6,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
-    android:paddingTop="5dp">
+    android:paddingTop="5dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
 
     <ImageView
         android:id="@+id/iv_profile_image"
