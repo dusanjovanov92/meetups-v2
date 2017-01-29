@@ -36,15 +36,25 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:hint="Napišite poruku..."/>
 
-            <Button
+            <!--<Button-->
+                <!--android:id="@+id/btn_send"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="bottom"-->
+                <!--android:enabled="false"-->
+                <!--android:text="SEND" />-->
+
+            <ImageButton
                 android:id="@+id/btn_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:enabled="false"
-                android:text="SEND" />
+                android:src="@drawable/btn_send"
+                android:background="@null"
+                android:layout_gravity="center_vertical"
+                />
         </LinearLayout>
     </LinearLayout>
 

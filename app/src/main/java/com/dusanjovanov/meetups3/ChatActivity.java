@@ -11,8 +11,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,7 +20,10 @@ import android.widget.TextView;
 import com.dusanjovanov.meetups3.fragments.ContactsFragment;
 import com.dusanjovanov.meetups3.models.ChatMessage;
 import com.dusanjovanov.meetups3.models.Contact;
+import com.dusanjovanov.meetups3.models.Group;
+import com.dusanjovanov.meetups3.models.Meeting;
 import com.dusanjovanov.meetups3.models.User;
+import com.dusanjovanov.meetups3.util.ConstantsUtil;
 import com.dusanjovanov.meetups3.util.DateTimeUtil;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -32,15 +35,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private DatabaseReference chatRef;
+    private DatabaseReference messageRef;
     private RecyclerView rvMessages;
-    private FirebaseRecyclerAdapter<ChatMessage,MessageViewHolder> adapter;
+    private FirebaseRecyclerAdapter<ChatMessage, MessageViewHolder> adapter;
     private Contact contact;
     private User currentUser;
+    private Meeting meeting;
+    private Group group;
     private ProgressBar progressBar;
     private LinearLayoutManager layoutManager;
     private EditText edtMessage;
-    private Button btnSend;
+    private ImageButton btnSend;
+    private String intentAction = "action";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +58,15 @@ public class ChatActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar!=null){
-            actionBar.setTitle(contact.getUser().getDisplayName());
+        if (actionBar != null) {
+            String title = null;
+            if (intentAction.equals(ContactsFragment.TAG)) {
+                title = contact.getUser().getDisplayName();
+            }
+            else if (intentAction.equals(MeetingActivity.TAG)) {
+                title = meeting.getLabel();
+            }
+            actionBar.setTitle(title);
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -65,23 +78,29 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void handleIntent(){
+    private void handleIntent() {
         Intent intent = getIntent();
-        String action = null;
-        if(intent!=null){
-            action = intent.getStringExtra("action");
-        }
-        if(action!=null){
-            if(action.equals(ContactsFragment.TAG)){
+        if (intent != null) {
+            intentAction = intent.getStringExtra("action");
+
+            if (intentAction.equals(ContactsFragment.TAG)) {
                 currentUser = (User) intent.getSerializableExtra("user");
                 contact = (Contact) intent.getSerializableExtra("contact");
+                messageRef = FirebaseDatabase.getInstance().getReference().child("chat").child(contact.getFirebaseNode());
+            }
+            else if (intentAction.equals(MeetingActivity.TAG)) {
+                meeting = (Meeting) intent.getSerializableExtra(ConstantsUtil.EXTRA_MEETING);
+                currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
+                group = (Group) intent.getSerializableExtra(ConstantsUtil.EXTRA_GROUP);
+                messageRef = FirebaseDatabase.getInstance().getReference().child("meetings").child(meeting.getFirebaseNode());
             }
         }
     }
 
-    private void setupMessageViews(){
+    private void setupMessageViews() {
         edtMessage = (EditText) findViewById(R.id.edt_message);
-        btnSend = (Button) findViewById(R.id.btn_send);
+        btnSend = (ImageButton) findViewById(R.id.btn_send);
+        btnSend.setEnabled(false);
 
         edtMessage.addTextChangedListener(new TextWatcher() {
             @Override
@@ -107,12 +126,14 @@ public class ChatActivity extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage();
+                if(btnSend.isEnabled()){
+                    sendMessage();
+                }
             }
         });
     }
 
-    static class MessageViewHolder extends RecyclerView.ViewHolder{
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
 
         ImageView ivProfileImage;
         CircleImageView civProfileImage;
@@ -130,26 +151,24 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(){
+    private void setupRecyclerView() {
         layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
         rvMessages = (RecyclerView) findViewById(R.id.rv_messages);
-        chatRef = FirebaseDatabase.getInstance().getReference().child("chat").child(contact.getFirebaseNode());
         adapter = new FirebaseRecyclerAdapter<ChatMessage, MessageViewHolder>(
                 ChatMessage.class,
                 R.layout.item_chat_message,
                 MessageViewHolder.class,
-                chatRef) {
+                messageRef) {
             @Override
             protected void populateViewHolder(MessageViewHolder viewHolder, ChatMessage model, int position) {
                 progressBar.setVisibility(View.INVISIBLE);
-                if(position==0){
+                if (position == 0) {
                     viewHolder.itemView.setVisibility(View.GONE);
                 }
-                if(model.getPhotoUrl()==null){
+                if (model.getPhotoUrl() == null) {
                     viewHolder.ivProfileImage.setImageDrawable(InterfaceUtil.getTextDrawable(model.getDisplayName()));
-                }
-                else{
+                } else {
                     viewHolder.ivProfileImage.setVisibility(View.GONE);
                     viewHolder.civProfileImage.setVisibility(View.VISIBLE);
                     Picasso.with(ChatActivity.this).load(model.getPhotoUrl()).into(viewHolder.civProfileImage);
@@ -157,7 +176,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 viewHolder.txtDisplayName.setText(model.getDisplayName());
                 viewHolder.txtMessage.setText(model.getMessage());
-                viewHolder.txtTime.setText(DateTimeUtil.getChatDateTime(model.getTime(),ChatActivity.this));
+                viewHolder.txtTime.setText(DateTimeUtil.getChatDateTime(model.getTime(), ChatActivity.this));
             }
         };
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -181,17 +200,17 @@ public class ChatActivity extends AppCompatActivity {
         rvMessages.setAdapter(adapter);
     }
 
-    private void sendMessage(){
+    private void sendMessage() {
         String messageText = edtMessage.getText().toString().trim();
-        ChatMessage message = new ChatMessage(currentUser.getDisplayName(),currentUser.getPhotoUrl(),messageText,System.currentTimeMillis());
+        ChatMessage message = new ChatMessage(currentUser.getDisplayName(), currentUser.getPhotoUrl(), messageText, System.currentTimeMillis());
 
-        chatRef.push().setValue(message);
+        messageRef.push().setValue(message);
         edtMessage.setText("");
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 break;

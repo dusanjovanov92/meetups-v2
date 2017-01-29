@@ -14,6 +14,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -57,6 +58,9 @@ public interface MeetupsApi {
     @POST("users/{id_user1}/contactRequests/{id_user2}")
     Call<Void> sendContactRequest(@Path("id_user1") int idUser1, @Path("id_user2") int idUser2);
 
+    @DELETE("users/{id_user1}/contactRequests/{id_user2}")
+    Call<Void> deleteContactRequest(@Path("id_user1") int idUser1,@Path("id_user2")int idUser2);
+
     @FormUrlEncoded
     @POST("groups")
     Call<Void> createGroup(@Field("name") String name,
@@ -77,11 +81,15 @@ public interface MeetupsApi {
     @DELETE("groups/{id_group}")
     Call<Void> deleteGroup(@Path("id_group") int idGroup);
 
+    @DELETE("meetings/{id_meeting}")
+    Call<Void> deleteMeeting(@Path("id_meeting") int idMeeting);
+
     @GET("meetings/{id_meeting}/responses")
     Call<List<MeetingResponse>> getMeetingResponses(@Path("id_meeting") int idMeeting);
 
-    @DELETE("users/{id_user1}/contactRequests/{id_user2}")
-    Call<Void> deleteContactRequest(@Path("id_user1") int idUser1,@Path("id_user2")int idUser2);
+    @FormUrlEncoded
+    @PUT("meetings/{id_meeting}/meetingResponses/{id_user}")
+    Call<Void> updateMeetingResponse(@Path("id_meeting") int idMeeting,@Path("id_user") int idUser,@Field("response") int response);
 
     @DELETE("memberRequests/{id_request}")
     Call<Void> deleteMemberRequest(@Path("id_request")int idRequest);

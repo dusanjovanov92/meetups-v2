@@ -10,11 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.adapters.MeetingResponsesRecyclerAdapter;
 import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
@@ -29,7 +31,6 @@ import com.dusanjovanov.meetups3.util.DateTimeUtil;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -38,6 +39,7 @@ import retrofit2.Response;
 
 public class MeetingActivity extends AppCompatActivity {
 
+    public static final String TAG = "TagMeetAct";
     private TextView txtStartsIn;
     private LinearLayout llResponse;
     private ImageView ivResponseIcon;
@@ -108,11 +110,12 @@ public class MeetingActivity extends AppCompatActivity {
                 new AlertDialog.Builder(MeetingActivity.this)
                         .setSingleChoiceItems(R.array.response_choices, yourResponse==null? -1 : yourResponse.getResponse()-1, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                            public void onClick(DialogInterface dialogInterface, int position) {
+                                respondToMeeting(position+1);
                                 dialogInterface.dismiss();
                             }
                         })
-                        .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
@@ -140,18 +143,19 @@ public class MeetingActivity extends AppCompatActivity {
             public void onResponse(Call<List<MeetingResponse>> call, Response<List<MeetingResponse>> response) {
                 if(response.isSuccessful()){
                     meetingResponses.clear();
-                    List<MeetingResponse> tempList = new LinkedList<>();
-                    if(response.body().size()!=0){
-                        tempList.addAll(response.body());
-                        for(MeetingResponse response1 : tempList){
-                            if(response1.getUser().getId()!=currentUser.getId()){
-                                meetingResponses.add(response1);
-                            }
-                            else{
-                                yourResponse = response1;
-                            }
-                        }
-                    }
+//                    List<MeetingResponse> tempList = new LinkedList<>();
+//                    if(response.body().size()!=0){
+//                        tempList.addAll(response.body());
+//                        for(MeetingResponse response1 : tempList){
+//                            if(response1.getUser().getId()!=currentUser.getId()){
+//                                meetingResponses.add(response1);
+//                            }
+//                            else{
+//                                yourResponse = response1;
+//                            }
+//                        }
+//                    }
+                    meetingResponses.addAll(response.body());
                     adapter.notifyDataSetChanged();
                     setupViews();
                 }
@@ -164,14 +168,90 @@ public class MeetingActivity extends AppCompatActivity {
         });
     }
 
+    private static final int ACTION_ENTER = 0;
+    private static final int ACTION_CANCEL = 1;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if(System.currentTimeMillis()>=(meeting.getStartTime()*1000)){
+            MenuItem actionEnter = menu.add(Menu.NONE,ACTION_ENTER,Menu.NONE,"Enter");
+            actionEnter.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            actionEnter.setIcon(R.drawable.ic_input_black_36dp);
+        }
+
+        MenuItem actionDelete = menu.add(Menu.NONE,ACTION_CANCEL,Menu.NONE,"Cancel/End");
+        actionDelete.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        actionDelete.setIcon(R.drawable.ic_delete_black_36dp);
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case ACTION_ENTER:
+                Intent intent = new Intent(this,ChatActivity.class);
+                intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
+                intent.putExtra(ConstantsUtil.EXTRA_MEETING,meeting);
+                intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
+                intent.putExtra(ConstantsUtil.EXTRA_GROUP,group);
+                startActivity(intent);
+                break;
+            case ACTION_CANCEL:
+                InterfaceUtil.showYesNoDialog(
+                        this,
+                        "Da li ste sigurni da hoćete da završite sastanak?",
+                        "Da",
+                        "Otkaži",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                                deleteMeeting();
+                            }
+                        });
+                break;
         }
 
         return true;
+    }
+
+    private void respondToMeeting(int response){
+        Call<Void> call = ApiClient.getApi().updateMeetingResponse(meeting.getId(),currentUser.getId(),response);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    getData();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void deleteMeeting(){
+        Call<Void> call = ApiClient.getApi().deleteMeeting(meeting.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(MeetingActivity.this, "Sastanak je završen", Toast.LENGTH_SHORT).show();
+                    onBackPressed();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
+            }
+        });
     }
 }

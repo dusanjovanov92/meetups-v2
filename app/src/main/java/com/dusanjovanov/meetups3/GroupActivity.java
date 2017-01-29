@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.fragments.GroupInfoFragment;
 import com.dusanjovanov.meetups3.fragments.GroupMeetingsFragment;
@@ -175,6 +176,7 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if(response.isSuccessful()){
+                    Toast.makeText(GroupActivity.this, "Grupa je obrisana", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }
             }
