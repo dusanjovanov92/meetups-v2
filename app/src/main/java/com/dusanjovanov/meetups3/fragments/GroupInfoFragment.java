@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,9 +99,12 @@ public class GroupInfoFragment extends Fragment {
         if(nextMeeting!=null){
             txtNextMeetingLabel.setText(nextMeeting.getLabel());
             txtNextMeetingTime.setText(DateTimeUtil.getMeetingDateTime(nextMeeting.getStartTime(),context));
+            txtNextMeeting.setText("Sledeći sastanak");
         }
         else{
             txtNextMeeting.setText("Nema novih sastanaka");
+            txtNextMeetingLabel.setVisibility(View.INVISIBLE);
+            txtNextMeetingTime.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -130,10 +132,6 @@ public class GroupInfoFragment extends Fragment {
                 if(response.isSuccessful()){
                     group = response.body();
                     setupViews();
-                    Log.d(TAG,String.valueOf(group.getMembers().size()));
-                    for(User member : group.getMembers()){
-                        Log.d(TAG,member.getDisplayName());
-                    }
                     members.clear();
                     members.addAll(group.getMembers());
                     adapter.notifyDataSetChanged();

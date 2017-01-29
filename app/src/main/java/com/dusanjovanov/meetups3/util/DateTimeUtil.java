@@ -36,4 +36,12 @@ public class DateTimeUtil {
         return String.format(Locale.getDefault(), "%s u %s", dfDate.format(date), dfTime.format(date));
     }
 
+    public static String getDateTime(long timestamp,Context context){
+        Date date = new Date(timestamp);
+
+        DateFormat dfDate = android.text.format.DateFormat.getMediumDateFormat(context);
+        DateFormat dfTime = android.text.format.DateFormat.getTimeFormat(context);
+        return String.format(Locale.getDefault(), "%s u %s", dfDate.format(date), dfTime.format(date));
+    }
+
 }

@@ -95,4 +95,20 @@ public class InterfaceUtil {
                 .show();
     }
 
+    public static void showInfoDialog(Context context,
+                                      String title,
+                                      String message){
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setIcon(R.drawable.ic_info_outline_blue_36dp)
+                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
 }

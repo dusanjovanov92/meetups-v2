@@ -22,7 +22,8 @@
         <activity android:name=".SearchActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".GroupActivity" />
-        <activity android:name=".MeetingActivity"></activity>
+        <activity android:name=".MeetingActivity" />
+        <activity android:name=".ScheduleMeetingActivity"></activity>
     </application>
 
 </manifest>

@@ -81,6 +81,11 @@ public interface MeetupsApi {
     @DELETE("groups/{id_group}")
     Call<Void> deleteGroup(@Path("id_group") int idGroup);
 
+    @FormUrlEncoded
+    @POST("groups/{id_group}/meetings")
+    Call<Void> scheduleMeeting(@Path("id_group") int idGroup,@Field("start_time") long startTime,@Field("firebase_node") String firebaseNode,
+                               @Field("label") String label);
+
     @DELETE("meetings/{id_meeting}")
     Call<Void> deleteMeeting(@Path("id_meeting") int idMeeting);
 

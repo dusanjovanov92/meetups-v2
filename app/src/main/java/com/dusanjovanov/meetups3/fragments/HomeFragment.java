@@ -42,6 +42,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
 
     private static final String TAG = "TagHomeFragment";
     private TextView txtContactRequestsNum;
+    private TextView txtGroupRequestsNum;
     private RecyclerView rvHome;
     private HomeRecyclerAdapter adapter;
     private List<ContactRequest> contactRequests = new ArrayList<>();
@@ -71,6 +72,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_home,container,false);
         txtContactRequestsNum = (TextView) fragment.findViewById(R.id.txt_contact_requests_number);
+        txtGroupRequestsNum = (TextView) fragment.findViewById(R.id.txt_group_requests_number);
         rvHome = (RecyclerView) fragment.findViewById(R.id.rv_home);
         rvHome.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -122,6 +124,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
                     groupRequests.addAll(groupRequestsGson);
                     adapter.notifyDataSetChanged();
                     txtContactRequestsNum.setText(String.valueOf(contactRequests.size()));
+                    txtGroupRequestsNum.setText(String.valueOf(groupRequests.size()));
                 }
 
             }
@@ -150,6 +153,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
                     contactRequests.remove(adapterPosition-1);
                     adapter.notifyItemRemoved(adapterPosition);
                     adapter.notifyDataSetChanged();
+                    txtContactRequestsNum.setText(String.valueOf(contactRequests.size()));
                 }
             }
 
@@ -171,6 +175,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
                     contactRequests.remove(adapterPosition-1);
                     adapter.notifyItemRemoved(adapterPosition);
                     adapter.notifyDataSetChanged();
+                    txtContactRequestsNum.setText(String.valueOf(contactRequests.size()));
                 }
             }
 
@@ -192,6 +197,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
                     groupRequests.remove(adapterPosition-2-(contactRequests.size()==0?1:contactRequests.size()));
                     adapter.notifyItemRemoved(adapterPosition);
                     adapter.notifyDataSetChanged();
+                    txtGroupRequestsNum.setText(String.valueOf(groupRequests.size()));
                 }
             }
 
@@ -213,6 +219,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
                     groupRequests.remove(adapterPosition-2-(contactRequests.size()==0?1:contactRequests.size()));
                     adapter.notifyItemRemoved(adapterPosition);
                     adapter.notifyDataSetChanged();
+                    txtGroupRequestsNum.setText(String.valueOf(groupRequests.size()));
                 }
             }
 

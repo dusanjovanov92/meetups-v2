@@ -156,6 +156,12 @@ public class MeetingActivity extends AppCompatActivity {
 //                        }
 //                    }
                     meetingResponses.addAll(response.body());
+                    for(MeetingResponse response1: meetingResponses){
+                        if(response1.getUser().getId()==currentUser.getId()){
+                            yourResponse = response1;
+                            break;
+                        }
+                    }
                     adapter.notifyDataSetChanged();
                     setupViews();
                 }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -11,10 +12,22 @@
 
         <TextView
             android:id="@+id/txt_contact_requests_number"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:drawableTop="@drawable/ic_person_add_black_48dp"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            tools:text="23"/>
+
+        <TextView
+            android:id="@+id/txt_group_requests_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_group_add_black_48dp"
+            android:gravity="center_horizontal"
+            tools:text="23"/>
+
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

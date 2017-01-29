@@ -47,30 +47,11 @@ public class GroupActivity extends AppCompatActivity {
 
         handleIntent();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar!=null){
-            actionBar.setTitle(group.getName());
-            actionBar.setDisplayShowHomeEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        setupToolbar();
 
-        pager = (ViewPager) findViewById(R.id.pager);
-        tabs = (TabLayout) findViewById(R.id.tabs);
-        pagerAdapter = new GroupPagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(pagerAdapter);
-        tabs.setupWithViewPager(pager);
-        tabs.getTabAt(0).setText("info");
-        tabs.getTabAt(1).setText("meetings");
+        setupViewPager();
 
-        fabScheduleMeeting = (FloatingActionButton) findViewById(R.id.fab_schedule_meeting);
-        fabScheduleMeeting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        setupViews();
     }
 
     private void handleIntent(){
@@ -84,6 +65,46 @@ public class GroupActivity extends AppCompatActivity {
                 currentUser = (User) intent.getSerializableExtra("current_user");
                 group = (Group) intent.getSerializableExtra("group");
             }
+        }
+    }
+
+    private void setupToolbar(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar!=null){
+            actionBar.setTitle(group.getName());
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void setupViewPager(){
+        pager = (ViewPager) findViewById(R.id.pager);
+        tabs = (TabLayout) findViewById(R.id.tabs);
+        pagerAdapter = new GroupPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+        tabs.setupWithViewPager(pager);
+        tabs.getTabAt(0).setText("info");
+        tabs.getTabAt(1).setText("meetings");
+    }
+
+    private void setupViews(){
+        fabScheduleMeeting = (FloatingActionButton) findViewById(R.id.fab_schedule_meeting);
+        if(group.getAdmin().getId()!=currentUser.getId()){
+            fabScheduleMeeting.setVisibility(View.GONE);
+        }
+        else{
+            fabScheduleMeeting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(GroupActivity.this,ScheduleMeetingActivity.class);
+                    intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
+                    intent.putExtra(ConstantsUtil.EXTRA_GROUP,group);
+                    intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
+                    startActivity(intent);
+                }
+            });
         }
     }
 
