@@ -25,6 +25,10 @@ public interface MeetupsApi {
     @GET("users/getByEmail/{email}")
     Call<User> getUser(@Path("email")String email);
 
+    @FormUrlEncoded
+    @PUT("users/{email}/token")
+    Call<User> updateToken(@Path("email") String email, @Field("token") String token);
+
     @GET("users/search/{query}")
     Call<ArrayList<User>> searchUsers(@Path("query") String query);
 

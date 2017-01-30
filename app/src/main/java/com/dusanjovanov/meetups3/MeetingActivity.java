@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.adapters.MeetingResponsesRecyclerAdapter;
 import com.dusanjovanov.meetups3.decorations.HorizontalDividerItemDecoration;
+import com.dusanjovanov.meetups3.fcm.MyFirebaseMessagingService;
 import com.dusanjovanov.meetups3.fragments.GroupMeetingsFragment;
 import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.Meeting;
@@ -40,6 +41,8 @@ import retrofit2.Response;
 public class MeetingActivity extends AppCompatActivity {
 
     public static final String TAG = "TagMeetAct";
+    private static final int ACTION_ENTER = 0;
+    private static final int ACTION_CANCEL = 1;
     private TextView txtStartsIn;
     private LinearLayout llResponse;
     private ImageView ivResponseIcon;
@@ -76,6 +79,11 @@ public class MeetingActivity extends AppCompatActivity {
         }
         if(action!=null){
             if(action.equals(GroupMeetingsFragment.TAG)){
+                currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
+                group = (Group) intent.getSerializableExtra(ConstantsUtil.EXTRA_GROUP);
+                meeting = (Meeting) intent.getSerializableExtra(ConstantsUtil.EXTRA_MEETING);
+            }
+            else if(action.equals(MyFirebaseMessagingService.TAG)){
                 currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
                 group = (Group) intent.getSerializableExtra(ConstantsUtil.EXTRA_GROUP);
                 meeting = (Meeting) intent.getSerializableExtra(ConstantsUtil.EXTRA_MEETING);
@@ -143,18 +151,6 @@ public class MeetingActivity extends AppCompatActivity {
             public void onResponse(Call<List<MeetingResponse>> call, Response<List<MeetingResponse>> response) {
                 if(response.isSuccessful()){
                     meetingResponses.clear();
-//                    List<MeetingResponse> tempList = new LinkedList<>();
-//                    if(response.body().size()!=0){
-//                        tempList.addAll(response.body());
-//                        for(MeetingResponse response1 : tempList){
-//                            if(response1.getUser().getId()!=currentUser.getId()){
-//                                meetingResponses.add(response1);
-//                            }
-//                            else{
-//                                yourResponse = response1;
-//                            }
-//                        }
-//                    }
                     meetingResponses.addAll(response.body());
                     for(MeetingResponse response1: meetingResponses){
                         if(response1.getUser().getId()==currentUser.getId()){
@@ -173,9 +169,6 @@ public class MeetingActivity extends AppCompatActivity {
             }
         });
     }
-
-    private static final int ACTION_ENTER = 0;
-    private static final int ACTION_CANCEL = 1;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

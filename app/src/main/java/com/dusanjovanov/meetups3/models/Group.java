@@ -44,4 +44,29 @@ public class Group implements Serializable{
     public List<User> getMembers() {
         return members;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAdmin(User admin) {
+        this.admin = admin;
+    }
+
+    public void setMemberCount(int memberCount) {
+        this.memberCount = memberCount;
+    }
+
+    public void setNextMeeting(Meeting nextMeeting) {
+        this.nextMeeting = nextMeeting;
+    }
+
+    public void setCurrentMeetingCount(int currentMeetingCount) {
+        this.currentMeetingCount = currentMeetingCount;
+    }
+
 }

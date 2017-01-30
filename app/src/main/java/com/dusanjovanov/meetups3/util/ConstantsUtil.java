@@ -9,4 +9,5 @@ public class ConstantsUtil {
     public static final String EXTRA_CURRENT_USER = "current_user";
     public static final String EXTRA_GROUP = "group";
     public static final String EXTRA_MEETING = "meeting";
+    public static final String REGISTRATION_TOKEN = "token";
 }

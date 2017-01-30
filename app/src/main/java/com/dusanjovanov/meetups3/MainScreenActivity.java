@@ -24,6 +24,7 @@ import com.dusanjovanov.meetups3.fragments.GroupsFragment;
 import com.dusanjovanov.meetups3.fragments.HomeFragment;
 import com.dusanjovanov.meetups3.fragments.ProfileFragment;
 import com.dusanjovanov.meetups3.models.User;
+import com.dusanjovanov.meetups3.util.ConstantsUtil;
 import com.google.firebase.auth.FirebaseAuth;
 
 import static com.dusanjovanov.meetups3.util.ConstantsUtil.EXTRA_ACTION;
@@ -104,11 +105,11 @@ public class MainScreenActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String action = null;
         if(intent!=null){
-            action = intent.getStringExtra("action");
+            action = intent.getStringExtra(ConstantsUtil.EXTRA_ACTION);
         }
         if(action!=null){
             if(action.equals(MainActivity.TAG)){
-                currentUser = (User) intent.getSerializableExtra("user");
+                currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
             }
         }
     }
