@@ -1,7 +1,9 @@
 package com.dusanjovanov.meetups3.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -43,6 +45,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
     private static final String TAG = "TagHomeFragment";
     private TextView txtContactRequestsNum;
     private TextView txtGroupRequestsNum;
+    private TextView txtNewMessageNum;
     private RecyclerView rvHome;
     private HomeRecyclerAdapter adapter;
     private List<ContactRequest> contactRequests = new ArrayList<>();
@@ -51,6 +54,8 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
     private Context context;
     private boolean refreshDisplay = false;
     private DatabaseReference dbRef;
+    private int newMessageCount;
+    private SharedPreferences preferences;
 
     public HomeFragment() {
     }
@@ -65,6 +70,9 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
         }
         adapter = new HomeRecyclerAdapter(context,contactRequests,groupRequests,this);
         dbRef = FirebaseDatabase.getInstance().getReference();
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        newMessageCount = preferences.getInt("new_message_count",0);
     }
 
     @Nullable
@@ -73,6 +81,8 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
         View fragment = inflater.inflate(R.layout.fragment_home,container,false);
         txtContactRequestsNum = (TextView) fragment.findViewById(R.id.txt_contact_requests_number);
         txtGroupRequestsNum = (TextView) fragment.findViewById(R.id.txt_group_requests_number);
+        txtNewMessageNum = (TextView) fragment.findViewById(R.id.txt_new_message_number);
+        txtNewMessageNum.setText(String.valueOf(newMessageCount));
         rvHome = (RecyclerView) fragment.findViewById(R.id.rv_home);
         rvHome.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -84,6 +94,9 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getRequests();
+        newMessageCount = preferences.getInt("new_message_count",0);
+        txtNewMessageNum.setText(String.valueOf(newMessageCount));
+//        preferences.edit().putInt("new_message_count",0).apply();
     }
 
     @Override
@@ -97,6 +110,9 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
         if(isVisibleToUser){
             if(refreshDisplay){
                 getRequests();
+                newMessageCount = preferences.getInt("new_message_count",0);
+                txtNewMessageNum.setText(String.valueOf(newMessageCount));
+//                preferences.edit().putInt("new_message_count",0).apply();
             }
         }
     }

@@ -73,7 +73,6 @@ public class MainScreenActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void handleIntent(){
@@ -84,6 +83,9 @@ public class MainScreenActivity extends AppCompatActivity {
         }
         if(action!=null){
             if(action.equals(MainActivity.TAG)){
+                currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
+            }
+            else if(action.equals(AlarmReceiver.TAG)){
                 currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
             }
         }

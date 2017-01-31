@@ -25,6 +25,8 @@
         <activity android:name=".MeetingActivity" />
         <activity android:name=".ScheduleMeetingActivity"/>
 
+        <receiver android:name=".AlarmReceiver"/>
+
         <service
             android:name=".fcm.MyFirebaseInstanceIDService">
             <intent-filter>

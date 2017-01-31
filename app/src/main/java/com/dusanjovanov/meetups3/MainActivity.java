@@ -1,5 +1,7 @@
 package com.dusanjovanov.meetups3;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -44,18 +46,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             finish();
         }
         else{
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             String token = preferences.getString(ConstantsUtil.REGISTRATION_TOKEN,null);
             Call<User> call = ApiClient.getApi().updateToken(currentUser.getEmail(),token);
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if(response.isSuccessful()){
+                        User currentUser = response.body();
+
+                        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
+                        Intent alarmIntent = new Intent(MainActivity.this,AlarmReceiver.class);
+                        alarmIntent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,0,alarmIntent
+                                ,PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                                System.currentTimeMillis()+5000,
+                                60000,
+                                pendingIntent);
+
                         Intent intent = new Intent(MainActivity.this,MainScreenActivity.class);
                         intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
                         intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,response.body());
+
                         startActivity(intent);
                         finish();
+
                     }
                     else{
                         Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
