@@ -184,7 +184,7 @@ public class ScheduleMeetingActivity extends AppCompatActivity implements View.O
 
         ChatMessage message = new ChatMessage("a",null,"a",0);
 
-        dbRef.child("meetings").child(firebaseNode).setValue(message);
+        dbRef.child("meetings").child(firebaseNode).push().setValue(message);
 
         Call<Void> call = ApiClient.getApi().scheduleMeeting(group.getId(),startTime/1000,firebaseNode,label);
         call.enqueue(new Callback<Void>() {

@@ -141,7 +141,8 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
     public void onContactRequestAcceptClick(final ContactRequest request, final int adapterPosition) {
         ChatMessage message = new ChatMessage("a","a","a",1);
         String firebaseNode = dbRef.child("chat").push().getKey();
-        dbRef.child("chat").child(firebaseNode).push().setValue(message);
+        dbRef.child("chat").child("/"+request.getUser().getId()+"/"+firebaseNode).push().setValue(message);
+        dbRef.child("chat").child("/"+currentUser.getId()+"/"+firebaseNode).push().setValue(message);
 
         Call<Void> call = ApiClient.getApi().addToContacts(currentUser.getId(),request.getUser().getId(),firebaseNode);
         call.enqueue(new Callback<Void>() {

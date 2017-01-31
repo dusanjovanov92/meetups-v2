@@ -29,6 +29,7 @@ import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.ConstantsUtil;
 import com.dusanjovanov.meetups3.util.DateTimeUtil;
+import com.dusanjovanov.meetups3.util.FirebaseUtil;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
 
 import java.util.ArrayList;
@@ -242,6 +243,7 @@ public class MeetingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if(response.isSuccessful()){
+                    FirebaseUtil.deleteFirebaseNode("meetings",meeting.getFirebaseNode());
                     Toast.makeText(MeetingActivity.this, "Sastanak je završen", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }

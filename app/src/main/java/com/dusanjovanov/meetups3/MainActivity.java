@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
@@ -57,13 +58,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         finish();
                     }
                     else{
-
+                        Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-
+                    Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
                 }
             });
 

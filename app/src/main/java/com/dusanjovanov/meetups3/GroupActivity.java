@@ -52,6 +52,7 @@ public class GroupActivity extends AppCompatActivity {
         setupViewPager();
 
         setupViews();
+
     }
 
     private void handleIntent(){
@@ -208,6 +209,5 @@ public class GroupActivity extends AppCompatActivity {
             }
         });
     }
-
 
 }
