@@ -27,8 +27,14 @@ public class FirebaseUtil {
                 .show();
     }
 
-    public static void deleteFirebaseNode(String type,String firebaseNode){
+    public static void deleteMeetingNode(String firebaseNode){
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.child(type).child(firebaseNode).removeValue();
+        dbRef.child("meetings").child(firebaseNode).removeValue();
+    }
+
+    public static void deleteChatNodes(int idUser1,int idUser2,String firebaseNode){
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        dbRef.child("chat").child(String.valueOf(idUser1)).child(firebaseNode).removeValue();
+        dbRef.child("chat").child(String.valueOf(idUser2)).child(firebaseNode).removeValue();
     }
 }

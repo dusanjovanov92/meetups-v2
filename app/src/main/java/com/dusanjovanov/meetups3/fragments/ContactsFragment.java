@@ -150,7 +150,7 @@ public class ContactsFragment extends Fragment implements ContactsRecyclerAdapte
                     contacts.remove(adapterPosition);
                     adapter.notifyItemRemoved(adapterPosition);
                     adapter.notifyDataSetChanged();
-                    FirebaseUtil.deleteFirebaseNode("chat",contact.getFirebaseNode());
+                    FirebaseUtil.deleteChatNodes(currentUser.getId(),contact.getUser().getId(),contact.getFirebaseNode());
                 }
             }
 

@@ -243,7 +243,7 @@ public class MeetingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if(response.isSuccessful()){
-                    FirebaseUtil.deleteFirebaseNode("meetings",meeting.getFirebaseNode());
+                    FirebaseUtil.deleteMeetingNode(meeting.getFirebaseNode());
                     Toast.makeText(MeetingActivity.this, "Sastanak je završen", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }

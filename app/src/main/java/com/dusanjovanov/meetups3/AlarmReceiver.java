@@ -63,6 +63,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                                     .putInt("new_message_count",newMessageCount)
                                     .apply();
                         }
+                        else if(firebaseMessageCount<messageCount){
+                            preferences.edit()
+                                    .putInt("message_count",firebaseMessageCount)
+                                    .apply();
+                        }
 
                         Intent notifIntent = new Intent(context,MainScreenActivity.class);
                         notifIntent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);

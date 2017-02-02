@@ -80,12 +80,12 @@ public class GroupMeetingsFragment extends Fragment implements InterfaceUtil.OnR
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getData();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        getData();
         updateData = true;
     }
 

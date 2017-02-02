@@ -99,6 +99,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             case R.id.btn_sign_in:
                 firebaseSignIn();
                 break;
+            case R.id.btn_create_account:
+                startActivity(new Intent(this,CreateAccountActivity.class));
         }
     }
 

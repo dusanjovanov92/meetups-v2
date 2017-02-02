@@ -95,8 +95,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
         super.onViewCreated(view, savedInstanceState);
         getRequests();
         newMessageCount = preferences.getInt("new_message_count",0);
-        txtNewMessageNum.setText(String.valueOf(newMessageCount));
-//        preferences.edit().putInt("new_message_count",0).apply();
+        preferences.edit().putInt("new_message_count",0).apply();
     }
 
     @Override
@@ -111,8 +110,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
             if(refreshDisplay){
                 getRequests();
                 newMessageCount = preferences.getInt("new_message_count",0);
-                txtNewMessageNum.setText(String.valueOf(newMessageCount));
-//                preferences.edit().putInt("new_message_count",0).apply();
+                preferences.edit().putInt("new_message_count",0).apply();
             }
         }
     }
@@ -155,7 +153,7 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
 
     @Override
     public void onContactRequestAcceptClick(final ContactRequest request, final int adapterPosition) {
-        ChatMessage message = new ChatMessage("a","a","a",1);
+        ChatMessage message = new ChatMessage("a",null,"a",1);
         String firebaseNode = dbRef.child("chat").push().getKey();
         dbRef.child("chat").child("/"+request.getUser().getId()+"/"+firebaseNode).push().setValue(message);
         dbRef.child("chat").child("/"+currentUser.getId()+"/"+firebaseNode).push().setValue(message);

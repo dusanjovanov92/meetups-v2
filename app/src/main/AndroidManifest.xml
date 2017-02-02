@@ -23,24 +23,22 @@
         <activity android:name=".ChatActivity" />
         <activity android:name=".GroupActivity" />
         <activity android:name=".MeetingActivity" />
-        <activity android:name=".ScheduleMeetingActivity"/>
+        <activity android:name=".ScheduleMeetingActivity" />
 
-        <receiver android:name=".AlarmReceiver"/>
+        <receiver android:name=".AlarmReceiver" />
 
-        <service
-            android:name=".fcm.MyFirebaseInstanceIDService">
+        <service android:name=".fcm.MyFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".fcm.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".fcm.MyFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
+        <activity android:name=".CreateAccountActivity"></activity>
     </application>
 
 </manifest>

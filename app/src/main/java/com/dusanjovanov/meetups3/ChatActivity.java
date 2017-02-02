@@ -36,6 +36,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatActivity extends AppCompatActivity {
 
     private DatabaseReference messageRef;
+    private DatabaseReference messageNode;
     private RecyclerView rvMessages;
     private FirebaseRecyclerAdapter<ChatMessage, MessageViewHolder> adapter;
     private Contact contact;
@@ -86,13 +87,15 @@ public class ChatActivity extends AppCompatActivity {
             if (intentAction.equals(ContactsFragment.TAG)) {
                 currentUser = (User) intent.getSerializableExtra("user");
                 contact = (Contact) intent.getSerializableExtra("contact");
-                messageRef = FirebaseDatabase.getInstance().getReference().child("chat").child(contact.getFirebaseNode());
+                messageRef = FirebaseDatabase.getInstance().getReference().child("chat");
+                messageNode = messageRef.child(String.valueOf(currentUser.getId())).child(contact.getFirebaseNode());
             }
             else if (intentAction.equals(MeetingActivity.TAG)) {
                 meeting = (Meeting) intent.getSerializableExtra(ConstantsUtil.EXTRA_MEETING);
                 currentUser = (User) intent.getSerializableExtra(ConstantsUtil.EXTRA_CURRENT_USER);
                 group = (Group) intent.getSerializableExtra(ConstantsUtil.EXTRA_GROUP);
-                messageRef = FirebaseDatabase.getInstance().getReference().child("meetings").child(meeting.getFirebaseNode());
+                messageRef = FirebaseDatabase.getInstance().getReference().child("meetings");
+                messageNode = messageRef.child(meeting.getFirebaseNode());
             }
         }
     }
@@ -159,7 +162,7 @@ public class ChatActivity extends AppCompatActivity {
                 ChatMessage.class,
                 R.layout.item_chat_message,
                 MessageViewHolder.class,
-                messageRef) {
+                messageNode) {
             @Override
             protected void populateViewHolder(MessageViewHolder viewHolder, ChatMessage model, int position) {
                 progressBar.setVisibility(View.INVISIBLE);
@@ -203,8 +206,13 @@ public class ChatActivity extends AppCompatActivity {
     private void sendMessage() {
         String messageText = edtMessage.getText().toString().trim();
         ChatMessage message = new ChatMessage(currentUser.getDisplayName(), currentUser.getPhotoUrl(), messageText, System.currentTimeMillis());
-
-        messageRef.push().setValue(message);
+        if (intentAction.equals(ContactsFragment.TAG)) {
+            messageRef.child(String.valueOf(currentUser.getId())).child(contact.getFirebaseNode()).push().setValue(message);
+            messageRef.child(String.valueOf(contact.getUser().getId())).child(contact.getFirebaseNode()).push().setValue(message);
+        }
+        else if (intentAction.equals(MeetingActivity.TAG)) {
+            messageRef.child(meeting.getFirebaseNode()).push().setValue(message);
+        }
         edtMessage.setText("");
     }
 

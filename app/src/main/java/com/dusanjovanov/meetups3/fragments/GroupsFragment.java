@@ -114,12 +114,12 @@ public class GroupsFragment extends Fragment implements InterfaceUtil.OnRowClick
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getGroups();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        getGroups();
         updateData = true;
     }
 
