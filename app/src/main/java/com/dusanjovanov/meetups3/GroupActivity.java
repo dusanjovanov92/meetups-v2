@@ -87,7 +87,7 @@ public class GroupActivity extends AppCompatActivity {
         pager.setAdapter(pagerAdapter);
         tabs.setupWithViewPager(pager);
         tabs.getTabAt(0).setText("info");
-        tabs.getTabAt(1).setText("meetings");
+        tabs.getTabAt(1).setText("sastanci");
     }
 
     private void setupViews(){
@@ -171,6 +171,7 @@ public class GroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(this,SearchActivity.class);
                 intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
                 intent.putExtra(ConstantsUtil.EXTRA_GROUP,group);
+                intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
                 startActivity(intent);
                 break;
             case ACTION_DELETE_GROUP:

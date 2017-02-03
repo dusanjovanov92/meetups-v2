@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.dusanjovanov.meetups3.models.Group;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.InterfaceUtil;
-import com.dusanjovanov.meetups3.util.NetworkUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,6 +51,32 @@ public class SearchActivity extends AppCompatActivity implements InterfaceUtil.O
 
         handleIntent();
 
+        setupToolbar();
+
+        setupSearchView();
+
+        setupRecyclerView();
+
+        txtNoResults = (TextView) findViewById(R.id.txt_no_results);
+    }
+
+    private void handleIntent() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            intentAction = intent.getStringExtra(EXTRA_ACTION);
+
+            if (intentAction.equals(MainScreenActivity.TAG)) {
+                currentUser = (User) intent.getSerializableExtra(EXTRA_CURRENT_USER);
+            }
+            else if (intentAction.equals(GroupActivity.TAG)) {
+                group = (Group) intent.getSerializableExtra(EXTRA_GROUP);
+                currentUser = (User) intent.getSerializableExtra(EXTRA_CURRENT_USER);
+            }
+        }
+
+    }
+
+    private void setupToolbar(){
         Toolbar appBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(appBar);
         ActionBar actionBar = getSupportActionBar();
@@ -61,7 +85,9 @@ public class SearchActivity extends AppCompatActivity implements InterfaceUtil.O
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
+    }
 
+    private void setupSearchView(){
         SearchView searchView = (SearchView) findViewById(R.id.search);
         searchView.requestFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -76,28 +102,13 @@ public class SearchActivity extends AppCompatActivity implements InterfaceUtil.O
                 return false;
             }
         });
+    }
 
+    private void setupRecyclerView(){
         RecyclerView rvSearchResults = (RecyclerView) findViewById(R.id.rv_search_results);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
         adapter = new UsersRecyclerAdapter(this, users, this);
         rvSearchResults.setAdapter(adapter);
-        txtNoResults = (TextView) findViewById(R.id.txt_no_results);
-
-    }
-
-    private void handleIntent() {
-        Intent intent = getIntent();
-        if (intent != null) {
-            intentAction = intent.getStringExtra(EXTRA_ACTION);
-
-            if (intentAction.equals(MainScreenActivity.TAG)) {
-                currentUser = (User) intent.getSerializableExtra(EXTRA_CURRENT_USER);
-            }
-            else if (intentAction.equals(GroupActivity.TAG)) {
-                group = (Group) intent.getSerializableExtra(EXTRA_GROUP);
-            }
-        }
-
     }
 
     private void search(String query) {
@@ -107,26 +118,27 @@ public class SearchActivity extends AppCompatActivity implements InterfaceUtil.O
             public void onResponse(Call<ArrayList<User>> call, retrofit2.Response<ArrayList<User>> response) {
                 if (response.isSuccessful()) {
                     users.clear();
-                    if (response.body().size() < 1) {
+                    for (User user: response.body()){
+                        if(user.getId()==currentUser.getId()){
+                            continue;
+                        }
+                        users.add(user);
+                    }
+                    if (users.size() < 1) {
                         txtNoResults.setVisibility(View.VISIBLE);
-                    } else {
+                    }
+                    else {
                         txtNoResults.setVisibility(View.GONE);
-                        users.addAll(response.body());
                     }
                     adapter.notifyDataSetChanged();
-                } else {
-                    Log.e(TAG, "Server error");
                 }
             }
 
             @Override
             public void onFailure(Call<ArrayList<User>> call, Throwable t) {
-                if (!NetworkUtil.isOnline(SearchActivity.this)) {
 
-                }
             }
         });
-
     }
 
     @Override

@@ -78,12 +78,6 @@ public class GroupInfoFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getData();
-    }
-
     private void setupViews(){
         int currentMeetingCount = group.getCurrentMeetingCount();
         if(currentMeetingCount==0){
@@ -113,6 +107,7 @@ public class GroupInfoFragment extends Fragment {
     public void onResume() {
         super.onResume();
         updateData = true;
+        getData();
     }
 
     @Override

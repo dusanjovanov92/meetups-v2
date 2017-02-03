@@ -1,7 +1,8 @@
 package com.dusanjovanov.meetups3.adapters;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,19 +23,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdapter.UserViewHolder>{
 
-    private AppCompatActivity activity;
+    private Context context;
     private ArrayList<User> users;
     private InterfaceUtil.OnRowClickListener listener;
+    private LayoutInflater inflater;
 
-    public UsersRecyclerAdapter(AppCompatActivity activity,ArrayList<User> users,InterfaceUtil.OnRowClickListener listener) {
-        this.activity = activity;
+    public UsersRecyclerAdapter(Context context,ArrayList<User> users,InterfaceUtil.OnRowClickListener listener) {
+        this.context = context;
         this.users = users;
         this.listener = listener;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new UserViewHolder(activity.getLayoutInflater().inflate(R.layout.item_user_search,parent,false));
+        return new UserViewHolder(inflater.inflate(R.layout.item_user_search,parent,false));
     }
 
     @Override
@@ -53,7 +56,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         private CircleImageView civProfileImage;
         private TextView txtDisplayName;
 
-        public UserViewHolder(View itemView) {
+        UserViewHolder(View itemView) {
             super(itemView);
             this.ivProfileImage = (ImageView) itemView.findViewById(R.id.iv_profile_image);
             this.civProfileImage = (CircleImageView) itemView.findViewById(R.id.civ_profile_image);
@@ -68,7 +71,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
             else{
                 ivProfileImage.setVisibility(View.GONE);
                 civProfileImage.setVisibility(View.VISIBLE);
-                Picasso.with(activity).load(user.getPhotoUrl()).into(civProfileImage);
+                Picasso.with(context).load(user.getPhotoUrl()).into(civProfileImage);
             }
 
             txtDisplayName.setText(user.getDisplayName());

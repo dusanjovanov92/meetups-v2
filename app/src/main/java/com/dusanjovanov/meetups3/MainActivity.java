@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.dusanjovanov.meetups3.models.ChatMessage;
 import com.dusanjovanov.meetups3.models.User;
 import com.dusanjovanov.meetups3.rest.ApiClient;
 import com.dusanjovanov.meetups3.util.ConstantsUtil;
@@ -17,7 +18,13 @@ import com.dusanjovanov.meetups3.util.FirebaseUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,7 +34,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public static final String TAG = "TagMainActivity";
     private GoogleApiClient googleApiClient;
-    private FirebaseUser currentUser;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
+    private User currentUser;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,21 +49,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-        currentUser = FirebaseUtil.getCurrentUser();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = FirebaseUtil.getCurrentUser();
 
-        if(currentUser==null){
+        if(mFirebaseUser ==null){
             startActivity(new Intent(this, SignInActivity.class));
             finish();
         }
         else{
-            final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            preferences = PreferenceManager.getDefaultSharedPreferences(this);
             String token = preferences.getString(ConstantsUtil.REGISTRATION_TOKEN,null);
-            Call<User> call = ApiClient.getApi().updateToken(currentUser.getEmail(),token);
+            Call<User> call = ApiClient.getApi().updateToken(mFirebaseUser.getEmail(),token);
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if(response.isSuccessful()){
-                        User currentUser = response.body();
+                        currentUser = response.body();
 
                         AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
                         Intent alarmIntent = new Intent(MainActivity.this,AlarmReceiver.class);
@@ -66,26 +77,61 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 60000,
                                 pendingIntent);
 
-                        Intent intent = new Intent(MainActivity.this,MainScreenActivity.class);
-                        intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
-                        intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,response.body());
-
-                        startActivity(intent);
-                        finish();
+                        getNumberOfMessages();
 
                     }
                     else{
+                        mFirebaseAuth.signOut();
                         Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+                    mFirebaseAuth.signOut();
                     Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
                 }
             });
 
         }
+    }
+
+    private void getNumberOfMessages(){
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        dbRef.child("chat").child(String.valueOf(currentUser.getId())).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int firebaseMessageCount = 0;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            for (DataSnapshot snapshot1 : snapshot.getChildren()){
+                                ChatMessage message = snapshot1.getValue(ChatMessage.class);
+                                if(!message.getDisplayName().equals(mFirebaseUser.getDisplayName())){
+                                    firebaseMessageCount++;
+                                }
+                            }
+                            firebaseMessageCount--;
+                        }
+
+                        preferences.edit()
+                                .putInt("message_count",firebaseMessageCount)
+                                .putInt("new_message_count",0)
+                                .apply();
+
+                        Intent intent = new Intent(MainActivity.this,MainScreenActivity.class);
+                        intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
+                        intent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
+
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
     }
 
     @Override

@@ -83,6 +83,14 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
         txtGroupRequestsNum = (TextView) fragment.findViewById(R.id.txt_group_requests_number);
         txtNewMessageNum = (TextView) fragment.findViewById(R.id.txt_new_message_number);
         txtNewMessageNum.setText(String.valueOf(newMessageCount));
+        txtNewMessageNum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                preferences.edit().putInt("new_message_count",0).apply();
+                txtNewMessageNum.setText(String.valueOf(0));
+                Toast.makeText(context, "Broj novih poruka resetovan", Toast.LENGTH_SHORT).show();
+            }
+        });
         rvHome = (RecyclerView) fragment.findViewById(R.id.rv_home);
         rvHome.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -95,7 +103,6 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
         super.onViewCreated(view, savedInstanceState);
         getRequests();
         newMessageCount = preferences.getInt("new_message_count",0);
-        preferences.edit().putInt("new_message_count",0).apply();
     }
 
     @Override
@@ -110,7 +117,6 @@ public class HomeFragment extends Fragment implements HomeRecyclerAdapter.OnRowC
             if(refreshDisplay){
                 getRequests();
                 newMessageCount = preferences.getInt("new_message_count",0);
-                preferences.edit().putInt("new_message_count",0).apply();
             }
         }
     }

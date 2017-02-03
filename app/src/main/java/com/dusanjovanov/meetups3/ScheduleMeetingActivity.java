@@ -186,7 +186,7 @@ public class ScheduleMeetingActivity extends AppCompatActivity implements View.O
 
         dbRef.child("meetings").child(firebaseNode).push().setValue(message);
 
-        Call<Void> call = ApiClient.getApi().scheduleMeeting(group.getId(),startTime/1000,firebaseNode,label);
+        Call<Void> call = ApiClient.getApi().scheduleMeeting(group.getId(),startTime/1000,firebaseNode,label,currentUser.getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
