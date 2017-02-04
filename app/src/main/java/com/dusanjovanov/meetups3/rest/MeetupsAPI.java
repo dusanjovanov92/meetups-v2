@@ -25,6 +25,9 @@ public interface MeetupsApi {
     @GET("users/getByEmail/{email}")
     Call<User> getUser(@Path("email")String email);
 
+    @GET("users/{email}/checkExists")
+    Call<String> checkEmailExists(@Path("email") String email);
+
     @FormUrlEncoded
     @PUT("users/{email}/token")
     Call<User> updateToken(@Path("email") String email, @Field("token") String token);
@@ -88,7 +91,7 @@ public interface MeetupsApi {
     @FormUrlEncoded
     @POST("groups/{id_group}/meetings")
     Call<Void> scheduleMeeting(@Path("id_group") int idGroup,@Field("start_time") long startTime,@Field("firebase_node") String firebaseNode,
-                               @Field("label") String label);
+                               @Field("label") String label,@Field("id_user") int idUser);
 
     @DELETE("meetings/{id_meeting}")
     Call<Void> deleteMeeting(@Path("id_meeting") int idMeeting);

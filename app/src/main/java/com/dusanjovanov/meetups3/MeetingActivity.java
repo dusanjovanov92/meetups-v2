@@ -180,9 +180,11 @@ public class MeetingActivity extends AppCompatActivity {
             actionEnter.setIcon(R.drawable.ic_input_black_36dp);
         }
 
-        MenuItem actionDelete = menu.add(Menu.NONE,ACTION_CANCEL,Menu.NONE,"Cancel/End");
-        actionDelete.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        actionDelete.setIcon(R.drawable.ic_delete_black_36dp);
+        if(currentUser.getId()==group.getAdmin().getId()){
+            MenuItem actionDelete = menu.add(Menu.NONE,ACTION_CANCEL,Menu.NONE,"Cancel/End");
+            actionDelete.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            actionDelete.setIcon(R.drawable.ic_delete_black_36dp);
+        }
 
         return true;
     }
