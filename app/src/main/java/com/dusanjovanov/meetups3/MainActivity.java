@@ -2,13 +2,14 @@ package com.dusanjovanov.meetups3;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.models.ChatMessage;
 import com.dusanjovanov.meetups3.models.User;
@@ -57,43 +58,76 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             finish();
         }
         else{
-            preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            String token = preferences.getString(ConstantsUtil.REGISTRATION_TOKEN,null);
-            Call<User> call = ApiClient.getApi().updateToken(mFirebaseUser.getEmail(),token);
-            call.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    if(response.isSuccessful()){
-                        currentUser = response.body();
-
-                        AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
-                        Intent alarmIntent = new Intent(MainActivity.this,AlarmReceiver.class);
-                        alarmIntent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,0,alarmIntent
-                                ,PendingIntent.FLAG_UPDATE_CURRENT);
-
-                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                                System.currentTimeMillis()+5000,
-                                60000,
-                                pendingIntent);
-
-                        getNumberOfMessages();
-
-                    }
-                    else{
-                        mFirebaseAuth.signOut();
-                        Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    mFirebaseAuth.signOut();
-                    Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            doTasks();
         }
+    }
+
+    private void doTasks(){
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String token = preferences.getString(ConstantsUtil.REGISTRATION_TOKEN,null);
+        Call<User> call = ApiClient.getApi().updateToken(mFirebaseUser.getEmail(),token);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()){
+                    currentUser = response.body();
+
+                    AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
+                    Intent alarmIntent = new Intent(MainActivity.this,AlarmReceiver.class);
+                    alarmIntent.putExtra(ConstantsUtil.EXTRA_CURRENT_USER,currentUser);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,0,alarmIntent
+                            ,PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                            System.currentTimeMillis()+5000,
+                            60000,
+                            pendingIntent);
+
+                    getNumberOfMessages();
+
+                }
+                else{
+                    mFirebaseAuth.signOut();
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Greska")
+                            .setMessage("Doslo je do greske, pritisnite ok da pokusate ponovo")
+                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialogInterface) {
+                                    doTasks();
+                                }
+                            })
+                            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                            .show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                mFirebaseAuth.signOut();
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Greska")
+                        .setMessage("Doslo je do greske, pritisnite ok da pokusate ponovo")
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialogInterface) {
+                                doTasks();
+                            }
+                        })
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
     }
 
     private void getNumberOfMessages(){
@@ -113,10 +147,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             firebaseMessageCount--;
                         }
 
-                        preferences.edit()
-                                .putInt("message_count",firebaseMessageCount)
-                                .putInt("new_message_count",0)
-                                .apply();
+                        int idUser = preferences.getInt("id_user",-1);
+
+                        if(idUser!=currentUser.getId()){
+                            preferences.edit()
+                                    .putInt("message_count",firebaseMessageCount)
+                                    .putInt("new_message_count",0)
+                                    .putInt("id_user",currentUser.getId())
+                                    .apply();
+                        }
 
                         Intent intent = new Intent(MainActivity.this,MainScreenActivity.class);
                         intent.putExtra(ConstantsUtil.EXTRA_ACTION,TAG);
