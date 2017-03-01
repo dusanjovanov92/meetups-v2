@@ -17,4 +17,25 @@
         android:src="@drawable/ic_launcher"
         android:layout_centerInParent="true" />
 
+    <TextView
+        android:id="@+id/txt_adresa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        tools:text="Adresa web servisa: http://192.168.1.13/api2/src/public/"/>
+
+    <Button
+        android:id="@+id/btn_adresa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Promeni adresu"
+        android:layout_below="@id/txt_adresa"/>
+
+    <Button
+        android:id="@+id/btn_pokreni"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pokreni aplikaciju"
+        android:layout_below="@id/btn_adresa"/>
+
 </RelativeLayout>

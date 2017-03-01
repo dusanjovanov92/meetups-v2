@@ -1,6 +1,7 @@
 package com.dusanjovanov.meetups3;
 
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,12 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dusanjovanov.meetups3.models.ChatMessage;
 import com.dusanjovanov.meetups3.models.User;
@@ -39,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private FirebaseUser mFirebaseUser;
     private User currentUser;
     private SharedPreferences preferences;
+    private Button btnAdresa;
+    private Button btnPokreni;
+    private TextView txtAdresa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +63,60 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = FirebaseUtil.getCurrentUser();
 
-        if(mFirebaseUser ==null){
+        btnAdresa = (Button) findViewById(R.id.btn_adresa);
+        btnPokreni = (Button) findViewById(R.id.btn_pokreni);
+        txtAdresa = (TextView) findViewById(R.id.txt_adresa);
+        txtAdresa.setText(ApiClient.BASE_URL);
+        btnAdresa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Promeni adresu")
+                        .setPositiveButton("Promeni", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Dialog dialog = (Dialog)dialogInterface;
+                                EditText edtName = (EditText) dialog.findViewById(R.id.edt);
+                                promeniAdresu(edtName.getText().toString());
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Otkaži", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+
+                final EditText input = new EditText(MainActivity.this);
+                input.setId(R.id.edt);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                input.setText(ApiClient.BASE_URL);
+                builder.setView(input);
+
+                builder.create().show();
+            }
+        });
+
+        btnPokreni.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doTasks();
+            }
+        });
+
+        if(mFirebaseUser == null){
             startActivity(new Intent(this, SignInActivity.class));
             finish();
         }
-        else{
-            doTasks();
-        }
+    }
+
+    private void promeniAdresu(String adresa){
+        ApiClient.BASE_URL = adresa;
+        txtAdresa.setText(adresa);
     }
 
     private void doTasks(){
@@ -87,45 +144,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 }
                 else{
-                    mFirebaseAuth.signOut();
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Greska")
-                            .setMessage("Doslo je do greske, pritisnite ok da pokusate ponovo")
-                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialogInterface) {
-                                    doTasks();
-                                }
-                            })
-                            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            })
-                            .show();
+//                    mFirebaseAuth.signOut();
+                    Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                mFirebaseAuth.signOut();
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Greska")
-                        .setMessage("Doslo je do greske, pritisnite ok da pokusate ponovo")
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialogInterface) {
-                                doTasks();
-                            }
-                        })
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .show();
+//                mFirebaseAuth.signOut();
+                Toast.makeText(MainActivity.this, "Greska", Toast.LENGTH_SHORT).show();
             }
         });
     }
